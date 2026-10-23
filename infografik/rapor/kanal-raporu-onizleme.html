@@ -1,0 +1,359 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}</style></head><body>
+<title>Dijital Bağış Raporu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: A4 kâğıt sayfaları (794×1123 px) üst üste; her bölümde gri tonlu kartlar, bölüm başına tek renk vurgusu.
+   Basılı rapor gibi tek (açık) temaya bilerek bağlı. */
+:root {
+  --desk: #e5e7ea; --paper: #ffffff; --ink: #1c2127; --ink2: #5b636d; --ink3: #8a929b; --line: #e3e6ea; --tile: #f5f6f8;
+  --blue: #3b6fb6; --green: #3f8f5a; --yellow: #d3a12a; --red: #c0503f; --gray: #7d858e;
+  --down: #c0503f;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--desk); color: var(--ink); font-family: var(--body); font-size: 12px; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.wrap {
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 20px; justify-items: center;
+}
+.toolbar { width: 100%; max-width: 794px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.toolbar .sp { flex: 1; }
+.btn { font: 600 13px var(--body); border: 1px solid #cfd3d8; background: var(--paper); color: var(--ink); padding: 8px 16px; border-radius: 99px; cursor: pointer; }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn:focus-visible, .in:focus-visible, .x:focus-visible, .add:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.status { font-size: 13px; color: var(--ink2); }
+.hint { width: 100%; max-width: 794px; font-size: 13px; color: var(--ink2); background: var(--paper); border-radius: 12px; padding: 10px 14px; }
+
+.sheet {
+  width: 100%; max-width: 794px; min-height: 1123px; background: var(--paper);
+  box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+  padding: 38px 42px 28px; display: flex; flex-direction: column; gap: 17px;
+}
+.sheet .grow { flex: 1; }
+.rh { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; padding-bottom: 14px; border-bottom: 1.5px solid var(--ink); }
+.rh .eb { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink2); }
+.rh h1 { font-family: var(--display); font-size: 28px; line-height: 1.05; margin: 4px 0 0; letter-spacing: -.02em; }
+.rh .yl { display: flex; gap: 14px; font-size: 11px; color: var(--ink2); white-space: nowrap; }
+.rh .yl b { color: var(--ink); }
+.pf { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink3); border-top: 1px solid var(--line); padding-top: 8px; }
+
+.sec { --c: var(--gray); display: grid; gap: 8px; min-width: 0; }
+.sh { display: flex; align-items: center; gap: 8px; }
+.sh .si { width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 15%, #fff); color: var(--c); flex: none; }
+.sh .si svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ins { margin: -2px 0 0; font-size: 12px; color: var(--ink2); display: flex; gap: 6px; align-items: baseline; }
+.ins::before { content: "→"; color: var(--c); font-weight: 700; }
+.ins b { color: var(--ink); font-weight: 600; }
+.mb { display: grid; gap: 3px; margin-top: 6px; }
+.mb i { display: block; height: 5px; border-radius: 3px; background: #d3d7dc; min-width: 2px; }
+.mb i:first-child { background: var(--c); }
+.flow { display: grid; grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) 20px minmax(0, 1fr); align-items: center; gap: 6px; }
+.flow .ar { text-align: center; color: var(--ink3); font-size: 16px; }
+.roi { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; background: color-mix(in srgb, var(--c) 7%, var(--tile)); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--ink2); }
+.roi b { font-family: var(--display); font-size: 22px; color: var(--ink); letter-spacing: -.02em; }
+.sh h2 { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; margin: 0; }
+.sh .ss { font-size: 11px; color: var(--ink3); }
+.sh::after { content: ""; flex: 1; height: 1px; background: var(--line); margin-left: 4px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+
+.tiles { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 8px; }
+.tile { background: color-mix(in srgb, var(--c) 7%, var(--tile)); border-radius: 10px; padding: 10px 12px 11px; display: grid; gap: 3px; align-content: start; min-width: 0; }
+.tl { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 11px; color: var(--ink2); }
+.tl span { min-width: 0; }
+.tv { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -.02em; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tv small { font-family: var(--body); font-weight: 500; font-size: 11px; color: var(--ink2); margin-left: 3px; letter-spacing: 0; }
+.tp { font-size: 11px; color: var(--ink3); }
+.tp b { color: var(--ink2); font-weight: 500; }
+.tile.big .tv { font-size: 30px; }
+.calc { font-size: 10px; color: var(--ink3); font-style: italic; }
+.chg { font-size: 11px; font-weight: 600; white-space: nowrap; color: var(--ink); }
+.chg.down { color: var(--down); }
+.empty { color: var(--ink3); font-weight: 400; }
+
+.lists { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 22px; }
+.lists .lt { grid-column: 1 / -1; font-size: 11px; font-weight: 600; color: var(--ink2); }
+.lcol { min-width: 0; }
+.lhead, .lr { display: grid; grid-template-columns: 14px 62px 66px minmax(30px, 1fr) 48px 78px; gap: 6px; align-items: center; }
+.lr .bar { height: 6px; border-radius: 3px; background: var(--tile); overflow: hidden; }
+.lr .bar i { display: block; height: 100%; border-radius: 3px; background: var(--c); }
+.lhead { font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.lhead b { font-family: var(--display); font-size: 13px; letter-spacing: 0; color: var(--ink); text-transform: none; }
+.lhead span:nth-child(n+5), .lr .n { text-align: right; }
+.lr { padding-block: 4px; border-bottom: 1px solid var(--line); font-size: 11.5px; }
+.lr .rk { color: var(--ink3); font-size: 10.5px; }
+.lr .d { white-space: nowrap; }
+.lr .d small { color: var(--ink3); font-size: 10px; margin-left: 3px; }
+.lr .k { justify-self: start; background: var(--tile); border-radius: 99px; padding: 1px 8px; font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.lr .n.b { font-weight: 600; }
+
+.mix { display: grid; gap: 7px; align-content: center; }
+.mix .mr { display: grid; grid-template-columns: 34px minmax(0, 1fr) 96px; gap: 8px; align-items: center; font-size: 11px; }
+.mix .mr b { font-family: var(--display); font-size: 13px; }
+.mix .track { height: 14px; display: flex; border-radius: 4px; overflow: hidden; background: var(--tile); }
+.mix .track i { display: block; height: 100%; }
+.mix .mv { text-align: right; font-weight: 600; }
+.mix .lg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 10.5px; color: var(--ink2); padding-left: 42px; }
+.mix .lg span { display: inline-flex; align-items: center; gap: 5px; }
+.mix .lg i { width: 8px; height: 8px; border-radius: 2px; }
+
+/* Düzenleme */
+.in { font: inherit; font-size: 13px; color: var(--ink); background: var(--paper); border: 1px solid #d5d9de; border-radius: 6px; padding: 5px 7px; width: 100%; min-width: 0; }
+.in.num { text-align: right; }
+.in::placeholder { color: var(--ink3); }
+.ei { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 6px; align-items: center; font-size: 11px; color: var(--ink2); }
+.lists.editing { grid-template-columns: 1fr; }
+.lists.editing .lhead, .lists.editing .lr { grid-template-columns: 18px minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(0, .9fr) minmax(0, 1fr) 24px; }
+.x { width: 24px; height: 24px; border-radius: 6px; border: 1px solid #d5d9de; background: var(--paper); color: var(--ink2); cursor: pointer; line-height: 1; }
+.add { justify-self: start; margin-top: 6px; font: 600 11.5px var(--body); color: var(--ink); background: var(--tile); border: 1px solid #d5d9de; border-radius: 99px; padding: 4px 12px; cursor: pointer; }
+
+@media (max-width: 720px) {
+  .sheet { min-height: 0; padding: 24px 16px; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .row2, .lists { grid-template-columns: 1fr; }
+  .rh { flex-wrap: wrap; }
+  .lists.editing .lhead { display: none; }
+  .lists.editing .lr { grid-template-columns: 18px minmax(0, 1fr) minmax(0, 1fr); row-gap: 6px; }
+  .lists.editing .lr .x { grid-column: 3; justify-self: end; }
+}
+@media print {
+  @page { size: A4; margin: 0; }
+  body { background: #fff; }
+  .wrap { padding: 0; gap: 0; }
+  .toolbar, .hint { display: none; }
+  .sheet { box-shadow: none; max-width: none; width: 210mm; height: 297mm; min-height: 0; break-after: page; }
+}
+</style>
+
+<div class="wrap">
+  <div class="toolbar">
+    <button class="btn" id="mode"></button>
+    <span class="status" id="status" aria-live="polite"></span>
+    <span class="sp"></span>
+    <span class="status">A4 · 2 sayfa</span>
+  </div>
+  <div id="hint" class="hint" hidden></div>
+  <article class="sheet" id="p1" aria-label="Sayfa 1"></article>
+  <article class="sheet" id="p2" aria-label="Sayfa 2"></article>
+</div>
+
+<script>
+const KAMP = { fitre: "Fitre", sofra: "Sofra", gazze: "Gazze", zekat: "Zekat", kurban: "Kurban", egitim: "Dünya Eğitim Günü", diger: "Diğer" };
+const rows = ks => ks.map(k => ({ tarih: "", kamp: k, islem: null, tutar: null }));
+const DEF = {
+  sms: {
+    2026: { tutar: null, k3072: null, k4072: null, link: null, gunler: rows(["fitre", "fitre", "sofra", "fitre", "sofra"]) },
+    2025: { tutar: null, k3072: null, k4072: null, link: null, gunler: rows(["gazze", "fitre", "gazze", "gazze", "gazze"]) },
+  },
+  mail: {
+    2026: { islem: null, tutar: null, gunler: rows(["fitre", "zekat", "kurban", "gazze", "egitim", "fitre"]) },
+    2025: { islem: null, tutar: null, gunler: rows(["gazze", "gazze", "gazze", "gazze", "gazze"]) },
+  },
+  push: { 2026: { islem: null, tutar: null }, 2025: { islem: null, tutar: null } },
+  mobil: { 2026: { islem: null, tutar: null }, 2025: { islem: null, tutar: null } },
+  google: { 2026: { harcama: null, islem: null, donus: null }, 2025: { harcama: null, islem: null, donus: null } },
+  youtube: { 2026: { gosterim: null }, 2025: { gosterim: null } },
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+// Kayıtlı veriyi varsayılan iskeletle birleştirir; sonradan eklenen bölümler boş gelir
+const merge = (def, got) => {
+  if (Array.isArray(def)) return Array.isArray(got) ? got : def;
+  if (def && typeof def === "object") { const o = {}; for (const k of new Set([...Object.keys(def), ...Object.keys(got || {})])) o[k] = merge(def[k], got ? got[k] : undefined); return o; }
+  return got === undefined ? def : got;
+};
+const LS = "dijital-bagis-raporu-v1";
+let state = clone(DEF);
+try { const s = localStorage.getItem(LS); if (s) state = merge(DEF, JSON.parse(s)); } catch (e) {}
+const hasNumbers = () => /"(tutar|islem|k3072|k4072|link|harcama|donus|gosterim)":\d/.test(JSON.stringify(state));
+let editing = !hasNumbers();
+let db = null, readOnly = false;
+
+const ICON = {
+  pie: '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+  sms: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  phone: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  play: '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
+};
+const nf = new Intl.NumberFormat("tr-TR");
+const pf = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const df = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const AYK = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+const AY = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+const GUN = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+const fmt = v => v == null ? "" : nf.format(v);
+const show = (v, f = nf) => v == null ? `<span class="empty">—</span>` : f.format(v);
+const chg = (a, b) => {
+  if (a == null || b == null || a === 0) return "";
+  const p = (b - a) / a * 100;
+  return `<span class="chg ${p < 0 ? "down" : ""}">${p < 0 ? "▼" : "▲"} %${pf.format(Math.abs(p))}</span>`;
+};
+// Tek cümlelik özetler
+const yon = (a, b) => { if (a == null || b == null || a === 0) return null; const p = (b - a) / a * 100; return p === 0 ? "değişmedi" : `%${pf.format(Math.abs(p))} ${p > 0 ? "arttı" : "azaldı"}`; };
+const tarihUzun = t => { const d = new Date(t + "T12:00:00"); return `${d.getDate()} ${AY[d.getMonth()]}`; };
+const ilkGun = sec => state[sec][2026].gunler.find(r => r.tarih);
+const ins = t => editing || !t ? "" : `<p class="ins"><span>${t}</span></p>`;
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+const fid = p => "f-" + p.replace(/\./g, "-");
+const num = (path, v, ph) => `<input class="in num" id="${fid(path)}" data-path="${path}" data-kind="num" inputmode="numeric" autocomplete="off" placeholder="${ph}" value="${fmt(v)}">`;
+
+// Kart: 2026 büyük, 2025 küçük, değişim sağ üstte
+function tile(sec, key, label, unit, o = {}) {
+  const a = o.calc ? o.calc(2025) : state[sec][2025][key], b = o.calc ? o.calc(2026) : state[sec][2026][key];
+  if (editing && !o.calc) {
+    return `<div class="tile"><div class="tl"><span>${label}</span><span>${unit}</span></div>
+      <label class="ei"><span>2026</span>${num(`${sec}.2026.${key}`, b, unit === "₺" ? "Tutar" : "Adet")}</label>
+      <label class="ei"><span>2025</span>${num(`${sec}.2025.${key}`, a, unit === "₺" ? "Tutar" : "Adet")}</label></div>`;
+  }
+  const f = o.f || nf;
+  return `<div class="tile ${o.big ? "big" : ""}"><div class="tl"><span>${label}</span>${editing ? "" : chg(a, b)}</div>
+    <div class="tv">${show(b, f)}<small>${unit}</small></div>
+    <div class="tp">${o.calc && editing ? `<span class="calc">Girdiğiniz rakamlardan hesaplanır</span>` : `2025 <b>${show(a, f)}</b>`}</div>
+    ${!editing && (a != null || b != null) ? `<div class="mb" aria-hidden="true"><i style="width:${(b || 0) / Math.max(a || 0, b || 0) * 100}%"></i><i style="width:${(a || 0) / Math.max(a || 0, b || 0) * 100}%"></i></div>` : ""}</div>`;
+}
+
+function listCol(sec, y) {
+  const list = state[sec][y].gunler;
+  const head = editing
+    ? `<div class="lhead"><b>${y}</b><span>Tarih</span><span>Kampanya</span><span>İşlem</span><span>Bağış (₺)</span><span></span></div>`
+    : `<div class="lhead"><span></span><b>${y}</b><span>Kampanya</span><span></span><span>İşlem</span><span>Bağış</span></div>`;
+  const max = Math.max(1, ...list.map(r => r.tutar || 0));
+  const body = list.map((r, i) => {
+    const p = `${sec}.${y}.gunler.${i}`;
+    if (editing) return `<div class="lr"><span class="rk">${i + 1}</span>
+      <input class="in" type="date" id="${fid(p)}-tarih" data-path="${p}.tarih" data-kind="date" value="${esc(r.tarih)}" aria-label="Tarih">
+      <select class="in" id="${fid(p)}-kamp" data-path="${p}.kamp" data-kind="kamp" aria-label="Kampanya">${Object.entries(KAMP).map(([k, n]) => `<option value="${k}"${k === r.kamp ? " selected" : ""}>${n}</option>`).join("")}</select>
+      ${num(`${p}.islem`, r.islem, "İşlem")}${num(`${p}.tutar`, r.tutar, "Tutar")}
+      <button class="x" data-act="del" data-sec="${sec}" data-y="${y}" data-i="${i}" aria-label="Satırı sil">×</button></div>`;
+    let d = `<span class="empty">—</span>`;
+    if (r.tarih) { const dt = new Date(r.tarih + "T12:00:00"); d = `${dt.getDate()} ${AYK[dt.getMonth()]}<small>${GUN[dt.getDay()]}</small>`; }
+    return `<div class="lr"><span class="rk">${i + 1}</span><span class="d">${d}</span><span class="k">${KAMP[r.kamp] || esc(r.kamp)}</span>
+      <span class="bar"><i style="width:${(r.tutar || 0) / max * 100}%"></i></span><span class="n">${show(r.islem)}</span><span class="n b">${r.tutar == null ? show(null) : nf.format(r.tutar) + " ₺"}</span></div>`;
+  }).join("");
+  return `<div class="lcol">${head}${body}${editing ? `<button class="add" data-act="add" data-sec="${sec}" data-y="${y}">+ Satır ekle</button>` : ""}</div>`;
+}
+const lists = (sec, title) => `<div class="lists ${editing ? "editing" : ""}"><div class="lt">${title}</div>${listCol(sec, 2026)}${listCol(sec, 2025)}</div>`;
+const section = (c, icon, name, sub, body, note = "") => `<section class="sec" style="--c:var(--${c})"><header class="sh"><span class="si"><svg viewBox="0 0 24 24">${ICON[icon]}</svg></span><h2>${name}</h2><span class="ss">${sub}</span></header>${ins(note)}${body}</section>`;
+
+// Genel özet: dört doğrudan kanalın bağış toplamı ve kanal dağılımı
+const CH = [["sms", "SMS", "blue"], ["mail", "Mail", "green"], ["push", "Web Push", "yellow"], ["mobil", "Mobil uygulama", "red"]];
+const toplam = y => { const v = CH.map(([k]) => state[k][y].tutar).filter(v => v != null); return v.length ? v.reduce((s, x) => s + x, 0) : null; };
+function ozet() {
+  const t26 = toplam(2026), t25 = toplam(2025), max = Math.max(t26 || 0, t25 || 0);
+  const bar = y => {
+    const t = toplam(y);
+    const seg = max ? CH.map(([k, , c]) => `<i style="width:${(state[k][y].tutar || 0) / max * 100}%;background:var(--${c})"></i>`).join("") : "";
+    return `<div class="mr"><b>${y}</b><div class="track">${seg}</div><span class="mv">${t == null ? show(null) : nf.format(t) + " ₺"}</span></div>`;
+  };
+  const totalTile = `<div class="tile big"><div class="tl"><span>Toplam bağış</span>${chg(t25, t26)}</div><div class="tv">${show(t26)}<small>₺</small></div><div class="tp">2025 <b>${show(t25)}</b></div></div>`;
+  let note = "";
+  if (t26 != null) {
+    const top = CH.map(([k, n]) => [n, state[k][2026].tutar || 0]).sort((x, y) => y[1] - x[1])[0];
+    const yy = yon(t25, t26);
+    note = `Dört kanaldan <b>${nf.format(t26)} ₺</b> bağış geldi${yy ? `, geçen yıla göre <b>${yy}</b>` : ""}. En büyük pay <b>${top[0]}</b> kanalında (%${pf.format(top[1] / t26 * 100)}).`;
+  }
+  return section("gray", "pie", "Genel özet", "SMS, Mail, Web Push ve Mobil uygulama toplamı",
+    `<div class="tiles" style="--n:3">${totalTile}<div class="mix" style="grid-column:span 2">${bar(2026)}${bar(2025)}
+      <div class="lg">${CH.map(([, n, c]) => `<span><i style="background:var(--${c})"></i>${n}</span>`).join("")}</div></div></div>`, note);
+}
+
+function render() {
+  const m = document.getElementById("mode");
+  m.textContent = editing ? "Bitti, raporu göster" : "Rakamları düzenle";
+  m.className = editing ? "btn primary" : "btn";
+  m.hidden = readOnly;
+  const h = document.getElementById("hint");
+  h.hidden = !editing;
+  h.textContent = "Rakamları noktasız yazabilirsiniz, otomatik biçimlenir. Her değişiklik kendiliğinden kaydedilir. Bitince rapor görünümüne geçin.";
+  const head = `<header class="rh"><div><div class="eb">Dijital bağış kanalları</div><h1>2026 Bağış Raporu</h1></div>
+    <div class="yl"><span><b>2026</b> büyük rakam</span><span><b>2025</b> küçük rakam</span><span>▲▼ 2025'e göre</span></div></header>`;
+  const foot = n => `<div class="grow"></div><footer class="pf"><span>Dijital Bağış Raporu · 2026 ve 2025</span><span>Sayfa ${n} / 2</span></footer>`;
+  const g = y => { const d = state.google[y]; return d.harcama ? (d.donus == null ? null : d.donus / d.harcama) : null; };
+  const yonOf = (sec, k) => yon(state[sec][2025][k], state[sec][2026][k]);
+  const smsTop = ilkGun("sms"), mailTop = ilkGun("mail");
+  const smsNote = [yonOf("sms", "tutar") && `Toplam SMS bağışı <b>${yonOf("sms", "tutar")}</b>.`, smsTop && `En yoğun gün: <b>${tarihUzun(smsTop.tarih)}</b> (${KAMP[smsTop.kamp]}).`].filter(Boolean).join(" ");
+  const mailNote = [yonOf("mail", "tutar") && `Mail ile gelen bağış <b>${yonOf("mail", "tutar")}</b>.`, mailTop && `En çok bağış <b>${tarihUzun(mailTop.tarih)}</b> tarihli ${KAMP[mailTop.kamp]} gönderiminden.`].filter(Boolean).join(" ");
+  const pushNote = yonOf("push", "tutar") && `Push ile toplanan bağış <b>${yonOf("push", "tutar")}</b>.`;
+  const mobilNote = yonOf("mobil", "tutar") && `Uygulama içi bağış <b>${yonOf("mobil", "tutar")}</b>.`;
+  const ytNote = yonOf("youtube", "gosterim") && `Gösterim sayısı <b>${yonOf("youtube", "gosterim")}</b>.`;
+  const r26 = g(2026), r25 = g(2025);
+  const googleNote = r26 != null && `Her 1 ₺ reklam harcaması <b>${df.format(r26)} ₺</b> bağış getirdi${r25 != null ? ` (2025'te ${df.format(r25)} ₺)` : ""}.`;
+  document.getElementById("p1").innerHTML = head + ozet()
+    + section("blue", "sms", "SMS", "3072, 4072 ve bağış linki",
+      `<div class="tiles">${tile("sms", "tutar", "Toplam bağış", "₺")}${tile("sms", "k3072", "3072", "adet")}${tile("sms", "k4072", "4072", "adet")}${tile("sms", "link", "Bağış linki", "adet")}</div>
+       ${lists("sms", "En çok SMS gelen günler")}`, smsNote)
+    + section("green", "mail", "Mail", "Mail gönderimleri",
+      `<div class="tiles" style="--n:2">${tile("mail", "islem", "İşlem", "işlem")}${tile("mail", "tutar", "Toplanan bağış", "₺")}</div>
+       ${lists("mail", "En çok bağış gelen mailler")}`, mailNote)
+    + foot(1);
+  const googleBody = editing
+    ? `<div class="tiles" style="--n:3">${tile("google", "harcama", "Harcama", "₺")}${tile("google", "islem", "İşlem", "işlem")}${tile("google", "donus", "Dönüş", "₺")}</div>`
+    : `<div class="flow">${tile("google", "harcama", "Harcama", "₺")}<span class="ar">→</span>${tile("google", "islem", "İşlem", "işlem")}<span class="ar">→</span>${tile("google", "donus", "Dönüş", "₺")}</div>
+       ${r26 != null ? `<div class="roi">Her 1 ₺ harcamaya dönüş <b>${df.format(r26)} ₺</b>${r25 != null ? `<span>2025: ${df.format(r25)} ₺</span>${chg(r25, r26)}` : ""}</div>` : ""}`;
+  document.getElementById("p2").innerHTML = head
+    + `<div class="row2">`
+    + section("yellow", "bell", "Web Push", "Push gönderimleri", `<div class="tiles" style="--n:2">${tile("push", "islem", "İşlem", "işlem")}${tile("push", "tutar", "Toplanan bağış", "₺")}</div>`, pushNote)
+    + section("red", "phone", "Mobil uygulama", "Uygulama içi bağışlar", `<div class="tiles" style="--n:2">${tile("mobil", "islem", "İşlem", "işlem")}${tile("mobil", "tutar", "Toplanan bağış", "₺")}</div>`, mobilNote)
+    + `</div>`
+    + section("gray", "search", "Google", "Reklam harcaması ve dönüşü", googleBody, googleNote)
+    + section("gray", "play", "YouTube", "Video gösterimleri", `<div class="tiles" style="--n:2">${tile("youtube", "gosterim", "Gösterim", "gösterim", { big: true })}</div>`, ytNote)
+    + foot(2);
+}
+
+// Kaydetme: ortak veritabanı varsa oraya, yoksa bu tarayıcıya
+const status = t => document.getElementById("status").textContent = t;
+let timer = null, chain = Promise.resolve();
+function save() {
+  try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {}
+  if (!db) { status("Bu tarayıcıda saklandı"); return; }
+  status("Kaydediliyor…");
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    const body = { veri: clone(state) };
+    chain = chain.then(() => db.doc("rapor/veri").set(body)).then(() => status("Kaydedildi"), e => {
+      if (e && e.code === "invalid_argument") { readOnly = true; editing = false; render(); status("Bu raporu düzenleme izniniz yok"); }
+      else status("Kaydedilemedi, tekrar deneyin");
+    });
+  }, 600);
+}
+const setPath = (path, v) => { const ks = path.split("."); let o = state; ks.slice(0, -1).forEach(k => o = o[k]); o[ks[ks.length - 1]] = v; };
+document.addEventListener("change", e => {
+  const el = e.target.closest("[data-path]"); if (!el) return;
+  let v = el.value;
+  if (el.dataset.kind === "num") { const d = v.replace(/\D/g, ""); v = d ? Number(d) : null; el.value = fmt(v); }
+  setPath(el.dataset.path, v);
+  save();
+});
+document.addEventListener("click", e => {
+  if (e.target.id === "mode") { editing = !editing; render(); return; }
+  const a = e.target.closest("[data-act]"); if (!a) return;
+  const list = state[a.dataset.sec][a.dataset.y].gunler;
+  if (a.dataset.act === "add") list.push({ tarih: "", kamp: "diger", islem: null, tutar: null });
+  else list.splice(+a.dataset.i, 1);
+  render(); save();
+});
+render();
+
+(async () => {
+  try { db = await window.claude?.use?.("db"); } catch (e) { db = null; }
+  if (!db) return;
+  db.doc("rapor/veri").onSnapshot(snap => {
+    if (!snap.exists || snap.metadata.hasPendingWrites) return;
+    const v = merge(DEF, snap.data().veri);
+    if (JSON.stringify(v) === JSON.stringify(state)) return;
+    if (document.activeElement && document.activeElement.dataset && document.activeElement.dataset.path) return;
+    state = v;
+    try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {}
+    editing = !hasNumbers();
+    render();
+  }, () => status("Bağlantı kesildi; değişiklikler bu tarayıcıda tutuluyor"));
+})();
+</script>
+</body></html>
