@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #eef2f4; --ink: #12171c; --muted: #66707a; --line: #dbe1e6;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1920px; height: 1080px; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-variant-numeric: tabular-nums;
+  padding: 56px 72px 44px; display: flex; flex-direction: column; gap: 22px; overflow: hidden;
+}
+header .eyebrow { font-size: 15px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+header h1 { font-family: var(--display); font-weight: 700; font-size: 52px; letter-spacing: -.03em; line-height: 1.05; margin-top: 8px; }
+header p { font-size: 18px; color: var(--muted); margin-top: 6px; }
+#c { flex: 1; min-height: 0; position: relative; }
+footer { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+svg text { font-family: var(--body); }
+.disp { font-family: var(--display); font-weight: 700; letter-spacing: -.03em; }
+svg.ic { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+</style>
+</head>
+<body>
+<header id="h"></header>
+<div id="c"></div>
+<footer id="f"></footer>
+<script>
+const ICONS = {
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  drop: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+  box: '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+  health: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
+  cap: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+  home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+};
+const ic = (k, s = 24, w = 1.8) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" stroke-width="${w}">${ICONS[k]}</svg>`;
+const icG = (k, cx, cy, s, color, w = 2) => `<g transform="translate(${cx - s / 2},${cy - s / 2}) scale(${s / 24})" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</g>`;
+
+// Gösterge renkleri
+const K = { users: "#0e8a7e", clock: "#6a4c93", drop: "#2f7fc1", box: "#e08a2a", health: "#e0573f", home: "#1d3a6b", cap: "#3f9c4a" };
+const DATA = [
+  ["Ulaşılan kişi",          "kişi",    1842300, 2156900, "users"],
+  ["Gönüllü çalışma saati",  "saat",    1205700, 1390050, "clock"],
+  ["Temiz suya erişim",      "kişi",     512000,  638400, "drop"],
+  ["Dağıtılan gıda kolisi",  "koli",     384120,  452760, "box"],
+  ["Sağlık taraması",        "kişi",      96450,   88310, "health"],
+  ["Barınma desteği",        "hane",      68420,   74150, "home"],
+  ["Burs alan öğrenci",      "öğrenci",   24860,   31240, "cap"],
+].map(([n, u, a, b, k]) => ({ n, u, a, b, k, c: K[k], p: (b - a) / a * 100 }));
+const get = k => DATA.find(d => d.k === k);
+const nf = new Intl.NumberFormat("tr-TR");
+const pf = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const fp = p => (p >= 0 ? "+" : "−") + "%" + pf.format(Math.abs(p));
+const fd = d => (d >= 0 ? "+" : "−") + nf.format(Math.abs(d));
+const byB = [...DATA].sort((x, y) => y.b - x.b);
+const byP = [...DATA].sort((x, y) => y.p - x.p);
+const T = (x, y, s, txt, o = {}) => `<text x="${x}" y="${y}" font-size="${s}" text-anchor="${o.a || "start"}" fill="${o.c || "#12171c"}" font-weight="${o.w || 400}"${o.d ? ' font-family="Familjen Grotesk" letter-spacing="-1"' : ""}${o.op ? ` opacity="${o.op}"` : ""}>${txt}</text>`;
+
+const V = {};
+
+// 14 Kalabalık
+V[14] = { name: "Kalabalık", title: "Bir yılda 314.600 kişi daha", sub: "Ulaşılan kişi sayısı. Her figür 100.000 kişiyi temsil eder.", note: "1 figür = 100.000 kişi", draw(W, H) {
+  const d = get("users"), U = 100000, per = 6, fw = 58, fh = 116, g = 18;
+  const person = (x, y, color, frac, id) => {
+    const clip = frac < 1 ? `<clipPath id="${id}"><rect x="${x}" y="${y}" width="${fw * frac}" height="${fh}"/></clipPath>` : "";
+    return `${clip}<g ${frac < 1 ? `clip-path="url(#${id})"` : ""} fill="${color}"><circle cx="${x + fw / 2}" cy="${y + 15}" r="14"/><path d="M${x + 6},${y + 42} Q${x + 6},${y + 34} ${x + 14},${y + 34} H${x + fw - 14} Q${x + fw - 6},${y + 34} ${x + fw - 6},${y + 42} V${y + 78} H${x + fw - 14} V${y + fh} H${x + 14} V${y + 78} H${x + 6} Z"/></g>`;
+  };
+  const crowd = (x0, n, color, tag) => {
+    let s = "";
+    for (let i = 0; i < Math.ceil(n); i++) {
+      const r = Math.floor(i / per), cI = i % per;
+      s += person(x0 + cI * (fw + g), 20 + r * (fh + 20), color, Math.min(1, n - i), tag + i);
+    }
+    return s;
+  };
+  const pw = per * fw + (per - 1) * g, xL = 90, xR = W - 90 - pw;
+  let s = crowd(xL, d.a / U, "#b9c2cb", "a") + crowd(xR, d.b / U, d.c, "b");
+  const ny = 20 + 4 * (fh + 20) + 70;
+  s += T(xL, ny, 22, "2025", { c: "#66707a", w: 600 }) + T(xL, ny + 74, 76, nf.format(d.a), { d: 1, w: 700, c: "#7d868f" });
+  s += T(xR, ny, 22, "2026", { c: d.c, w: 600 }) + T(xR, ny + 74, 76, nf.format(d.b), { d: 1, w: 700, c: d.c });
+  const cx = W / 2;
+  s += `<path d="M${cx - 150},300 H${cx + 120}" stroke="${d.c}" stroke-width="10" stroke-linecap="round"/><path d="M${cx + 100},270 L${cx + 150},300 L${cx + 100},330" fill="none" stroke="${d.c}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>`;
+  s += T(cx, 410, 92, fp(d.p), { a: "middle", d: 1, w: 700, c: d.c }) + T(cx, 455, 22, `${fd(d.b - d.a)} kişi`, { a: "middle", c: "#66707a" });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 15 Su damlası
+V[15] = { name: "Su damlası", bg: "#e6f0f8", title: "Temiz suya erişim büyüdü", sub: "Damlaların alanı kişi sayısıyla orantılı.", note: "Damla alanı değerle orantılı", draw(W, H) {
+  const d = get("drop"), base = H - 70;
+  const drop = (cx, s, fill, year, val, op) => {
+    const w = 100 * s, h = 140 * s, x = cx - w / 2, y = base - h;
+    return `<ellipse cx="${cx}" cy="${base + 18}" rx="${w * 0.62}" ry="${18}" fill="none" stroke="${fill}" stroke-width="3" opacity=".35"/>
+      <ellipse cx="${cx}" cy="${base + 18}" rx="${w * 0.9}" ry="${28}" fill="none" stroke="${fill}" stroke-width="2" opacity=".18"/>
+      <g transform="translate(${x},${y}) scale(${s})"><path d="M50,0 C50,0 0,62 0,92 A50,50 0 0 0 100,92 C100,62 50,0 50,0 Z" fill="${fill}" opacity="${op}"/>
+      <path d="M24,86 C24,72 32,60 38,52" fill="none" stroke="#fff" stroke-width="${5 / s * 1.4}" stroke-linecap="round" opacity=".5"/></g>
+      ${T(cx, base - h * 0.32, 24, year, { a: "middle", c: "#fff", w: 600, op: .85 })}
+      ${T(cx, base - h * 0.32 + 62, 58 * s / 4, nf.format(val), { a: "middle", c: "#fff", d: 1, w: 700 })}`;
+  };
+  const s26 = (H - 110) / 140, s25 = s26 * Math.sqrt(d.a / d.b);
+  let s = drop(330, s25, "#8fb9df", "2025", d.a, 1) + drop(900, s26, d.c, "2026", d.b, 1);
+  const x = 1230;
+  s += T(x, 250, 150, fp(d.p), { d: 1, w: 700, c: d.c }) + T(x, 300, 26, `${fd(d.b - d.a)} kişi daha temiz suya erişti`, { c: "#3a4a5a" });
+  s += icG("drop", x + 26, 400, 52, d.c, 2) + T(x + 70, 410, 20, "Örnek: kuyu, çeşme ve arıtma projeleri", { c: "#66707a" });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 16 Koli yığını
+V[16] = { name: "Koli yığını", bg: "#f3efe9", title: "Daha fazla gıda kolisi", sub: "Her kutu yaklaşık 16.000 koliyi temsil eder.", note: "1 kutu ≈ 16.000 koli", draw(W, H) {
+  const d = get("box"), U = 16000, s = 72, dd = 26, cols = 6, base = H - 160;
+  const box = (x, y, op) => `<g opacity="${op}" stroke="#8a5a22" stroke-width="1.2" stroke-linejoin="round">
+    <polygon points="${x},${y} ${x + dd},${y - dd} ${x + s + dd},${y - dd} ${x + s},${y}" fill="#efb868"/>
+    <polygon points="${x + s},${y} ${x + s + dd},${y - dd} ${x + s + dd},${y + s - dd} ${x + s},${y + s}" fill="#b9782e"/>
+    <rect x="${x}" y="${y}" width="${s}" height="${s}" fill="#d9974a"/>
+    <line x1="${x + s / 2}" y1="${y}" x2="${x + s / 2 + dd}" y2="${y - dd}" stroke="#f7dcb0" stroke-width="6"/>
+    <line x1="${x + s / 2}" y1="${y}" x2="${x + s / 2}" y2="${y + s * 0.3}" stroke="#f0cf98" stroke-width="6"/></g>`;
+  const pile = (x0, n, op) => { let o = ""; for (let i = 0; i < n; i++) { const r = Math.floor(i / cols), c = i % cols; o += box(x0 + c * s, base - (r + 1) * s, op); } return o; };
+  const pw = cols * s + dd, xL = 120, xR = W - 120 - pw;
+  const n25 = Math.round(d.a / U), n26 = Math.round(d.b / U);
+  let o = `<rect x="0" y="${base}" width="${W}" height="3" fill="#d8ccbb"/>` + pile(xL, n25, .55) + pile(xR, n26, 1);
+  o += T(xL, base + 52, 22, "2025", { c: "#66707a", w: 600 }) + T(xL, base + 120, 66, nf.format(d.a), { d: 1, w: 700, c: "#8a7a66" });
+  o += T(xR, base + 52, 22, "2026", { c: d.c, w: 600 }) + T(xR, base + 120, 66, nf.format(d.b), { d: 1, w: 700, c: "#b4651a" });
+  o += T(W / 2 + 10, 330, 120, fp(d.p), { a: "middle", d: 1, w: 700, c: "#b4651a" }) + T(W / 2 + 10, 378, 24, `${fd(d.b - d.a)} koli`, { a: "middle", c: "#66707a" });
+  return `<svg width="${W}" height="${H}">${o}</svg>`;
+}};
+
+// 17 Basamaklar
+V[17] = { name: "Yükselen basamaklar", title: "Her basamak bir gösterge", sub: "Basamak yüksekliği 2025'e göre değişim oranını gösterir.", note: "", draw(W, H) {
+  const rows = [...DATA].sort((x, y) => x.p - y.p), n = rows.length, sw = (W - 40) / n;
+  const y0 = H - 200, k = (y0 - 300) / Math.max(...rows.map(r => r.p));
+  let s = "";
+  rows.forEach((d, i) => {
+    const x = 20 + i * sw, h = Math.abs(d.p) * k, up = d.p >= 0;
+    if (up) s += `<rect x="${x + 4}" y="${y0 - h}" width="${sw - 8}" height="${h}" rx="6" fill="${d.c}"/>`;
+    else s += `<rect x="${x + 4}" y="${y0}" width="${sw - 8}" height="${h}" rx="6" fill="${d.c}" opacity=".85"/>`;
+    const cy = up ? y0 - h - 62 : y0 - 62, cx = x + sw / 2;
+    s += `<circle cx="${cx}" cy="${cy}" r="44" fill="#fff" stroke="${d.c}" stroke-width="4"/>` + icG(d.k, cx, cy, 44, d.c, 2);
+    s += T(cx, cy - 64, 38, fp(d.p), { a: "middle", d: 1, w: 700, c: d.c });
+    if (up && h > 60) s += T(cx, y0 - 22, 18, nf.format(d.b), { a: "middle", c: "#fff", w: 600 });
+    const ty = up ? y0 + 40 : y0 + h + 36;
+    s += T(cx, ty, 19, d.n, { a: "middle", w: 500 });
+  });
+  s += `<rect x="0" y="${y0 - 1.5}" width="${W}" height="3" fill="#12171c"/>`;
+  const last = 20 + (n - 1) * sw + sw / 2, top = y0 - rows[n - 1].p * k - 62 - 64 - 140;
+  s += `<line x1="${last}" y1="${top + 20}" x2="${last}" y2="${top + 100}" stroke="#12171c" stroke-width="3"/><path d="M${last},${top + 20} l46,16 l-46,16 z" fill="#f0b030"/>`;
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 18 Renk blokları
+V[18] = { name: "Renk blokları", title: "2026'da rakamlarımız", sub: "Her renk bir alan. Büyük rakam 2026, küçük etiket 2025'e göre değişim.", note: "", draw(W, H) {
+  const [h, ...rest] = byB;
+  const tile = (d, big) => `<div style="position:relative;overflow:hidden;border-radius:26px;background:${d.c};color:#fff;padding:${big ? "40px 44px" : "26px 28px"};display:flex;flex-direction:column;justify-content:space-between;${big ? "grid-column:span 2;grid-row:span 2" : ""}">
+    <span style="position:absolute;right:${big ? -40 : -24}px;bottom:${big ? -40 : -30}px;opacity:.18">${ic(d.k, big ? 420 : 190, 1.6)}</span>
+    <div style="font-size:${big ? 26 : 18}px;font-weight:500;position:relative;line-height:1.25">${d.n}</div>
+    <div style="position:relative">
+      <div class="disp" style="font-size:${big ? 150 : 52}px;line-height:1">${nf.format(d.b)}</div>
+      <div style="margin-top:${big ? 18 : 10}px;display:inline-block;background:rgba(255,255,255,.2);border-radius:99px;padding:4px 12px;font-family:var(--display);font-weight:700;font-size:${big ? 30 : 18}px">${fp(d.p)}</div>
+    </div></div>`;
+  return `<div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:18px;height:100%">${tile(h, 1)}${rest.map(d => tile(d)).join("")}</div>`;
+}};
+
+// 19 Rozetler
+V[19] = { name: "Rozetler", bg: "#f4f2ee", title: "Yedi alan, yedi rozet", sub: "Rozetin altındaki kurdele 2025'e göre değişimi gösterir.", note: "", draw(W, H) {
+  const R = 112, rowY = [150, 520], cols = [4, 3];
+  let s = "", i = 0;
+  const star = (cx, cy) => { let p = []; for (let j = 0; j < 48; j++) { const r = j % 2 ? R - 9 : R, a = j / 48 * Math.PI * 2; p.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`); } return p.join(" "); };
+  rowY.forEach((cy, ri) => {
+    const n = cols[ri], gap = W / 4;
+    for (let c = 0; c < n; c++, i++) {
+      const d = byB[i], cx = (W - (n - 1) * gap) / 2 + c * gap;
+      s += `<polygon points="${star(cx, cy)}" fill="${d.c}"/><circle cx="${cx}" cy="${cy}" r="${R - 24}" fill="#fff"/><circle cx="${cx}" cy="${cy}" r="${R - 34}" fill="none" stroke="${d.c}" stroke-width="2" stroke-dasharray="4 6"/>` + icG(d.k, cx, cy - 4, 76, d.c, 1.8);
+      const ry = cy + R - 24, rw = 150;
+      s += `<path d="M${cx - rw / 2 - 22},${ry} h22 v44 h-22 l12,-22 z M${cx + rw / 2 + 22},${ry} h-22 v44 h22 l-12,-22 z" fill="${d.c}" opacity=".7"/><rect x="${cx - rw / 2}" y="${ry - 6}" width="${rw}" height="48" rx="4" fill="${d.c}"/>`;
+      s += T(cx, ry + 28, 26, fp(d.p), { a: "middle", d: 1, w: 700, c: "#fff" });
+      s += T(cx, ry + 82, 19, d.n, { a: "middle", w: 500 }) + T(cx, ry + 120, 34, nf.format(d.b), { a: "middle", d: 1, w: 700, c: d.c });
+    }
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 20 Büyüme ağacı
+V[20] = { name: "Büyüme ağacı", bg: "#eef4ec", title: "Altı dalda büyüme", sub: "Her meyve bir gösterge; meyve ne kadar büyükse büyüme o kadar yüksek.", note: "Meyve büyüklüğü değişim oranıyla orantılı", draw(W, H) {
+  const cx = 1180, cy = 330, ground = H - 30;
+  let s = `<ellipse cx="${cx}" cy="${ground}" rx="420" ry="26" fill="#d5e3d0"/>`;
+  s += `<path d="M${cx - 34},${ground} C${cx - 30},${ground - 120} ${cx - 40},${cy + 200} ${cx - 20},${cy + 120} L${cx + 20},${cy + 120} C${cx + 40},${cy + 200} ${cx + 30},${ground - 120} ${cx + 34},${ground} Z" fill="#7a5230"/>`;
+  [[0, 0, 250, "#3f9c4a"], [-215, 50, 175, "#2f8540"], [215, 50, 175, "#2f8540"], [-130, -140, 165, "#56b05d"], [135, -140, 165, "#56b05d"], [0, -190, 150, "#4aa653"], [-270, -60, 120, "#4aa653"], [270, -60, 120, "#4aa653"]]
+    .forEach(([x, y, r, c]) => s += `<circle cx="${cx + x}" cy="${cy + y}" r="${r}" fill="${c}"/>`);
+  const ups = byP.filter(d => d.p >= 0);
+  const pos = [[-150, -160], [150, -150], [-260, 40], [10, -20], [250, 60], [-80, 150]];
+  ups.forEach((d, i) => {
+    const [x, y] = pos[i], r = 36 + d.p * 1.5;
+    s += `<circle cx="${cx + x}" cy="${cy + y + 6}" r="${r}" fill="#000" opacity=".12"/><circle cx="${cx + x}" cy="${cy + y}" r="${r}" fill="#fff" stroke="${d.c}" stroke-width="6"/>` + icG(d.k, cx + x, cy + y - 10, r * 0.75, d.c, 2);
+    s += T(cx + x, cy + y + r * 0.62, r * 0.38, fp(d.p), { a: "middle", d: 1, w: 700, c: d.c });
+  });
+  const dn = byP.find(d => d.p < 0), lx = cx + 250, ly = ground - 40;
+  s += `<path d="M${lx},${ly} q30,-40 70,-10 q-20,40 -70,10z" fill="${dn.c}"/><line x1="${lx}" y1="${ly}" x2="${lx + 50}" y2="${ly - 16}" stroke="#fff" stroke-width="2"/>`;
+  s += T(lx + 84, ly - 6, 18, `${dn.n} ${fp(dn.p)}`, { c: dn.c, w: 600 });
+  let ty = 40;
+  s += T(0, ty + 20, 15, "GÖSTERGELER · 2026", { c: "#66707a", w: 500 });
+  byP.forEach((d, i) => {
+    const y = ty + 70 + i * 92;
+    s += `<circle cx="26" cy="${y}" r="26" fill="${d.c}"/>` + icG(d.k, 26, y, 28, "#fff", 2);
+    s += T(70, y - 6, 19, d.n, { w: 500 }) + T(70, y + 26, 30, nf.format(d.b), { d: 1, w: 700 }) + T(300, y + 26, 24, fp(d.p), { d: 1, w: 700, c: d.c });
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 21 Yol haritası
+V[21] = { name: "Yol haritası", title: "2025'ten 2026'ya yolculuk", sub: "Yol boyunca her durak bir gösterge ve o göstergedeki değişim.", note: "", draw(W, H) {
+  const d = `M60,${H - 70} C460,${H - 70} 420,${H * 0.42} 860,${H * 0.46} S1280,${H * 0.9} ${W - 120},140`;
+  return `<svg width="${W}" height="${H}">
+    <path id="road" d="${d}" fill="none" stroke="#3b4652" stroke-width="70" stroke-linecap="round"/>
+    <path d="${d}" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="26 20"/>
+    <circle cx="60" cy="${H - 70}" r="54" fill="#fff" stroke="#3b4652" stroke-width="6"/>${T(60, H - 60, 30, "2025", { a: "middle", d: 1, w: 700, c: "#66707a" })}
+    <line x1="${W - 120}" y1="140" x2="${W - 120}" y2="0" stroke="#12171c" stroke-width="5"/><path d="M${W - 120},4 l80,26 l-80,26 z" fill="#0e8a7e"/>${T(W - 135, 40, 30, "2026", { a: "end", d: 1, w: 700, c: "#0e8a7e" })}
+    <g id="pins"></g></svg>`;
+}, after() {
+  const road = document.getElementById("road"), L = road.getTotalLength();
+  const ts = [0.13, 0.25, 0.38, 0.5, 0.63, 0.76, 0.88];
+  const order = [...DATA].sort((x, y) => x.p - y.p);
+  let s = "";
+  order.forEach((d, i) => {
+    const p = road.getPointAtLength(L * ts[i]), x = p.x, y = p.y - 24, above = i % 2 === 0;
+    s += `<path d="M${x},${y} c-14,-22 -38,-40 -38,-70 a38,38 0 0 1 76,0 c0,30 -24,48 -38,70z" fill="${d.c}" stroke="#fff" stroke-width="3"/>` + icG(d.k, x, y - 70, 36, "#fff", 2.2);
+    const cw = 230, Wd = road.ownerSVGElement.width.baseVal.value;
+    const cx = (i === 0 || x + 40 + cw > Wd) ? x - 40 - cw : x + 40, cyy = above ? y - 200 : y + 70;
+    s += `<line x1="${x}" y1="${above ? y - 108 : y}" x2="${x}" y2="${above ? cyy + 42 : cyy + 42}" stroke="${d.c}" stroke-width="2" stroke-dasharray="3 4"/><line x1="${x}" y1="${cyy + 42}" x2="${cx > x ? cx : cx + cw}" y2="${cyy + 42}" stroke="${d.c}" stroke-width="2" stroke-dasharray="3 4"/>`;
+    s += `<rect x="${cx}" y="${cyy}" width="${cw}" height="84" rx="14" fill="#fff" stroke="#dbe1e6"/>`;
+    s += T(cx + 16, cyy + 30, 17, d.n, { w: 500 }) + T(cx + 16, cyy + 68, 30, fp(d.p), { d: 1, w: 700, c: d.c }) + T(cx + cw - 14, cyy + 66, 16, nf.format(d.b), { a: "end", c: "#66707a" });
+  });
+  document.getElementById("pins").innerHTML = s;
+}};
+
+// 22 İzometrik kuleler
+V[22] = { name: "İzometrik kuleler", bg: "#eceff5", title: "Her kule bir yıl", sub: "Gri kule 2025, renkli kule 2026. 2025 yüksekliği her göstergede eşit (endeks 100).", note: "Endeks: 2025 = 100", draw(W, H) {
+  const base = H - 150, w = 64, dd = 34, dy = 20, k = 3.5, n = 7, step = (W - 80) / n;
+  const prism = (x, h, front, side, top) => `<polygon points="${x + w},${base - h} ${x + w + dd},${base - h - dy} ${x + w + dd},${base - dy} ${x + w},${base}" fill="${side}"/><polygon points="${x},${base - h} ${x + dd},${base - h - dy} ${x + w + dd},${base - h - dy} ${x + w},${base - h}" fill="${top}"/><rect x="${x}" y="${base - h}" width="${w}" height="${h}" fill="${front}"/>`;
+  const shade = (hex, f) => { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f))); return `rgb(${c})`; };
+  let s = `<polygon points="10,${base + 14} ${10 + 60},${base - 30} ${W - 10},${base - 30} ${W - 70},${base + 14}" fill="#dfe4ec"/><rect x="10" y="${base + 14}" width="${W - 80}" height="16" fill="#cdd4df"/>`;
+  byP.forEach((d, i) => {
+    const x = 60 + i * step, h25 = 100 * k, h26 = (100 + d.p) * k;
+    s += prism(x, h25, "#c3cad2", "#a3acb6", "#dde2e7") + prism(x + w + 18, h26, d.c, shade(d.c, -0.3), shade(d.c, 0.35));
+    s += T(x + w + 18 + w / 2 + 8, base - Math.max(h25, h26) - dy - 18, 32, fp(d.p), { a: "middle", d: 1, w: 700, c: d.c });
+    s += `<circle cx="${x + w + 9}" cy="${base + 70}" r="24" fill="${d.c}"/>` + icG(d.k, x + w + 9, base + 70, 26, "#fff", 2);
+    s += T(x + w + 9, base + 124, 17, d.n, { a: "middle", w: 500 });
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 23 Merkez ve uydular
+V[23] = { name: "Merkez ve uydular", bg: "#0f1d24", dark: true, title: "Bir yıl, yedi alan", sub: "Merkezde yıl özeti, etrafında her alanın 2026 rakamı ve değişimi.", note: "", draw(W, H) {
+  const cx = W / 2, cy = H / 2, rx = 600, ry = 270;
+  let s = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="#2a3e48" stroke-width="2" stroke-dasharray="6 10"/>`;
+  const pts = DATA.map((d, i) => { const a = -Math.PI / 2 + i / DATA.length * Math.PI * 2; return { d, x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a), cos: Math.cos(a) }; });
+  pts.forEach(({ x, y }) => s += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#2a3e48" stroke-width="2"/>`);
+  s += `<circle cx="${cx}" cy="${cy}" r="160" fill="#0e8a7e"/><circle cx="${cx}" cy="${cy}" r="182" fill="none" stroke="#0e8a7e" stroke-width="2" opacity=".5"/>`;
+  s += T(cx, cy - 36, 22, "2025 → 2026", { a: "middle", c: "#cfe9e5", w: 500 }) + T(cx, cy + 30, 64, "6 artış", { a: "middle", d: 1, w: 700, c: "#fff" }) + T(cx, cy + 76, 28, "1 düşüş", { a: "middle", d: 1, w: 700, c: "#ffb4a3" });
+  pts.forEach(({ d, x, y, cos }) => {
+    s += `<circle cx="${x}" cy="${y}" r="62" fill="${d.c}"/><circle cx="${x}" cy="${y}" r="74" fill="none" stroke="${d.c}" stroke-width="2" opacity=".5"/>` + icG(d.k, x, y, 54, "#fff", 2);
+    const right = cos >= 0, tx = right ? x + 92 : x - 92, a = right ? "start" : "end";
+    s += T(tx, y - 18, 18, d.n, { a, c: "#9fb0b8", w: 500 }) + T(tx, y + 24, 40, nf.format(d.b), { a, d: 1, w: 700, c: "#fff" }) + T(tx, y + 56, 22, fp(d.p), { a, d: 1, w: 700, c: d.p >= 0 ? "#6fd3c6" : "#ff9a85" });
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+const n = +location.hash.slice(1) || 14, v = V[n];
+if (v.bg) document.body.style.background = v.bg;
+if (v.dark) { document.body.style.color = "#fff"; document.documentElement.style.setProperty("--muted", "#8fa1aa"); }
+document.getElementById("h").innerHTML = `<div class="eyebrow">Örnek ${n} · ${v.name}</div><h1>${v.title}</h1><p>${v.sub}</p>`;
+document.getElementById("f").innerHTML = `<span>Örnek veri${v.note ? " · " + v.note : ""}</span><span>Değişim = (2026 − 2025) ÷ 2025</span>`;
+const c = document.getElementById("c");
+c.innerHTML = v.draw(c.clientWidth, c.clientHeight);
+v.after?.();
+</script>
+</body>
+</html>

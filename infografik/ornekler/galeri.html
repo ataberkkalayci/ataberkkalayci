@@ -33,6 +33,9 @@ h1 { font-family: var(--display); font-size: 28px; margin: 0; letter-spacing: -.
 .stage img { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; background: var(--surface); }
 .cap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
 .cap b { color: var(--ink); font-weight: 500; }
+.glabel { flex: none; align-self: center; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 0 4px 0 10px; }
+.gh { font-family: var(--display); font-size: 18px; margin: 18px 0 10px; }
+.gh:first-child { margin-top: 0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
 .grid button { all: unset; cursor: pointer; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
 .grid button img { width: 100%; border-radius: 8px; border: 1px solid var(--line); display: block; }
@@ -42,7 +45,7 @@ h1 { font-family: var(--display); font-size: 28px; margin: 0; letter-spacing: -.
 <div class="wrap">
   <div>
     <h1>2025 → 2026 görselleştirme örnekleri</h1>
-    <p class="sub">Aynı örnek veri, 13 farklı tarz. Hepsi 16:9 PNG (3840×2160).</p>
+    <p class="sub">Aynı örnek veri, 23 farklı tarz: 10 görsel ağırlıklı, 13 veri ağırlıklı. Hepsi 16:9 PNG (3840×2160).</p>
   </div>
   <nav class="tabs" id="tabs" role="tablist" aria-label="Örnekler"></nav>
   <section id="view"></section>
@@ -63,11 +66,23 @@ const ITEMS = [
   ["Bölünmüş ekran", "Solda 2025, sağda 2026, karşı karşıya"],
   ["Koyu poster", "Koyu zemin, öne çıkan rakam ve liste"],
   ["Değişim kartları", "Büyük yüzde oranı, renk yönü gösterir"],
-].map(([name, desc], i) => ({ id: "o" + String(i + 1).padStart(2, "0"), n: i + 1, name, desc, src: `ornek-${String(i + 1).padStart(2, "0")}.png` }));
+  ["Kalabalık", "Her figür 100.000 kişi; iki kalabalık yan yana", "g"],
+  ["Su damlası", "Damla alanı kişi sayısıyla orantılı", "g"],
+  ["Koli yığını", "Her kutu yaklaşık 16.000 koli", "g"],
+  ["Yükselen basamaklar", "Basamak yüksekliği değişim oranı", "g"],
+  ["Renk blokları", "Her alan bir renk, büyük rakam ve dev ikon", "g"],
+  ["Rozetler", "Her gösterge bir rozet, kurdelede değişim", "g"],
+  ["Büyüme ağacı", "Meyve büyüklüğü büyüme oranı", "g"],
+  ["Yol haritası", "2025'ten 2026'ya yol boyunca duraklar", "g"],
+  ["İzometrik kuleler", "Gri kule 2025, renkli kule 2026", "g"],
+  ["Merkez ve uydular", "Koyu zemin, merkezde özet, etrafta alanlar", "g"],
+].map(([name, desc, g], i) => ({ id: "o" + String(i + 1).padStart(2, "0"), n: i + 1, name, desc, g: g ? "Görsel ağırlıklı" : "Veri ağırlıklı", src: `ornek-${String(i + 1).padStart(2, "0")}.png` }));
+const ORDER = [...ITEMS.filter(x => x.g === "Görsel ağırlıklı"), ...ITEMS.filter(x => x.g === "Veri ağırlıklı")];
 
 const tabs = document.getElementById("tabs"), view = document.getElementById("view");
 const all = { id: "tumu", name: "Tümü" };
-[all, ...ITEMS].forEach(it => {
+[all, ...ORDER].forEach((it, i, arr) => {
+  if (it.g && arr[i - 1].g !== it.g) { const l = document.createElement("span"); l.className = "glabel"; l.textContent = it.g; tabs.append(l); }
   const b = document.createElement("button");
   b.id = "tab-" + it.id; b.role = "tab"; b.dataset.id = it.id;
   b.textContent = it.n ? `${String(it.n).padStart(2, "0")} · ${it.name}` : it.name;
@@ -82,7 +97,7 @@ function show(id) {
     view.innerHTML = `<div class="stage"><img src="${it.src}" alt="Örnek ${it.n}: ${it.name}">
       <div class="cap"><span><b>${String(it.n).padStart(2, "0")} · ${it.name}</b> — ${it.desc}</span><span>Örnek veri</span></div></div>`;
   } else {
-    view.innerHTML = `<div class="grid">${ITEMS.map(x => `<button data-id="${x.id}"><img src="${x.src}" alt="" loading="lazy"><span>${String(x.n).padStart(2, "0")} · ${x.name}</span></button>`).join("")}</div>`;
+    view.innerHTML = ["Görsel ağırlıklı", "Veri ağırlıklı"].map(g => `<h2 class="gh">${g}</h2><div class="grid">${ITEMS.filter(x => x.g === g).map(x => `<button data-id="${x.id}"><img src="${x.src}" alt="" loading="lazy"><span>${String(x.n).padStart(2, "0")} · ${x.name}</span></button>`).join("")}</div>`).join("");
     view.querySelectorAll(".grid button").forEach(b => b.onclick = () => { show(b.dataset.id); window.scrollTo(0, 0); });
   }
   document.getElementById("tab-" + (it ? id : "tumu")).scrollIntoView({ block: "nearest", inline: "nearest" });
