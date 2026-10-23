@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Caveat:wght@600&display=swap">
 <style>
 :root {
   --bg: #eef2f4; --ink: #12171c; --muted: #66707a; --line: #dbe1e6;
@@ -268,10 +268,211 @@ V[23] = { name: "Merkez ve uydular", bg: "#0f1d24", dark: true, title: "Bir yıl
   return `<svg width="${W}" height="${H}">${s}</svg>`;
 }};
 
+const shade = (hex, f) => { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f))); return `rgb(${c})`; };
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// 24 Kavanozlar
+V[24] = { name: "Kavanozlar", bg: "#f2f0ea", title: "Kavanozlar doluyor", sub: "Kesikli çizgi 2025 seviyesi. Kavanozdaki doluluk 2026'yı gösterir (2025 = 100).", note: "Endeks: 2025 = 100", draw(W, H) {
+  const n = 7, step = W / n, jw = 168, top = 120, bh = 420, max = 130;
+  let s = "";
+  byP.forEach((d, i) => {
+    const cx = step * i + step / 2, x = cx - jw / 2, bot = top + bh, lv = bot - (100 + d.p) / max * bh, l25 = bot - 100 / max * bh, id = "jar" + i;
+    s += `<clipPath id="${id}"><rect x="${x}" y="${top}" width="${jw}" height="${bh}" rx="34"/></clipPath>`;
+    s += `<rect x="${x}" y="${top}" width="${jw}" height="${bh}" rx="34" fill="#fff"/>`;
+    const ww = jw / 4;
+    s += `<g clip-path="url(#${id})"><path d="M${x - 10},${lv} q${ww / 2},-12 ${ww},0 t${ww},0 t${ww},0 t${ww},0 t${ww},0 V${bot + 10} H${x - 10} Z" fill="${d.c}"/><path d="M${x - 10},${lv + 14} q${ww / 2},-10 ${ww},0 t${ww},0 t${ww},0 t${ww},0 t${ww},0 V${bot + 10} H${x - 10} Z" fill="${shade(d.c, -0.15)}"/></g>`;
+    s += `<rect x="${x}" y="${top}" width="${jw}" height="${bh}" rx="34" fill="none" stroke="#c9c3b6" stroke-width="5"/>`;
+    s += `<rect x="${x + 14}" y="${top - 34}" width="${jw - 28}" height="34" rx="8" fill="${shade(d.c, -0.25)}"/>`;
+    s += `<line x1="${x - 14}" x2="${x + jw + 14}" y1="${l25}" y2="${l25}" stroke="#12171c" stroke-width="2.5" stroke-dasharray="7 6"/>`;
+    s += `<rect x="${x + 30}" y="${top + 40}" width="${jw - 60}" height="${jw - 60}" rx="14" fill="#fff" opacity=".92"/>` + icG(d.k, cx, top + 40 + (jw - 60) / 2, 56, d.c, 2);
+    s += `<path d="M${x + 16},${top + 30} V${top + 160}" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".5"/>`;
+    s += T(cx, top - 54, 36, fp(d.p), { a: "middle", d: 1, w: 700, c: d.p >= 0 ? d.c : "#e0573f" });
+    s += T(cx, bot + 44, 19, d.n, { a: "middle", w: 500 }) + T(cx, bot + 86, 32, nf.format(d.b), { a: "middle", d: 1, w: 700 });
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 25 Balonlar
+V[25] = { name: "Balonlar", bg: "#e4f1fa", title: "Her alan yükseliyor", sub: "Balonun yüksekliği 2025'e göre değişimi gösterir. Kesikli çizgi 2025 seviyesi.", note: "", draw(W, H) {
+  const y0 = H - 200, k = (y0 - 300) / 26, step = W / 7;
+  let s = "";
+  [[260, 120], [900, 70], [1500, 160], [620, 300]].forEach(([x, y]) => s += `<g fill="#fff" opacity=".9"><ellipse cx="${x}" cy="${y}" rx="70" ry="26"/><ellipse cx="${x + 46}" cy="${y - 16}" rx="46" ry="30"/><ellipse cx="${x - 40}" cy="${y - 8}" rx="36" ry="22"/></g>`);
+  s += `<line x1="0" x2="${W}" y1="${y0}" y2="${y0}" stroke="#7a8a99" stroke-width="2" stroke-dasharray="8 8"/>` + T(W, y0 - 12, 15, "2025 seviyesi", { a: "end", c: "#66707a" });
+  s += `<rect x="0" y="${y0 + 70}" width="${W}" height="${H - y0 - 70}" fill="#cfe3c4"/>`;
+  byP.forEach((d, i) => {
+    const cx = step * i + step / 2, up = d.p >= 0, by = y0 - d.p * k - 80, rx = up ? 62 : 52, ry = up ? 76 : 60;
+    s += `<path d="M${cx},${by + ry + 10} C${cx - 18},${by + ry + 70} ${cx + 18},${y0 + 10} ${cx},${y0 + 70}" fill="none" stroke="#7a8a99" stroke-width="2"/>`;
+    s += `<ellipse cx="${cx}" cy="${by}" rx="${rx}" ry="${ry}" fill="${d.c}"/><path d="M${cx - 9},${by + ry + 12} L${cx},${by + ry - 2} L${cx + 9},${by + ry + 12} Z" fill="${shade(d.c, -0.2)}"/>`;
+    s += `<ellipse cx="${cx - rx * 0.4}" cy="${by - ry * 0.4}" rx="${rx * 0.18}" ry="${ry * 0.26}" fill="#fff" opacity=".35"/>` + icG(d.k, cx, by - 4, 46, "#fff", 2);
+    s += T(cx, by - ry - 16, 30, fp(d.p), { a: "middle", d: 1, w: 700, c: shade(d.c, -0.1) });
+    s += T(cx, y0 + 128, 18, d.n, { a: "middle", w: 500 }) + T(cx, y0 + 162, 26, nf.format(d.b), { a: "middle", d: 1, w: 700 });
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 26 Dağ zirveleri
+V[26] = { name: "Dağ zirveleri", bg: "#eaf0f3", title: "Zirveye tırmanış", sub: "Zirve yüksekliği 2025'e göre büyüme oranıyla orantılı.", note: "", draw(W, H) {
+  const base = H - 120, k = (base - 140) / 26, order = [...DATA].sort((x, y) => x.p - y.p);
+  const ups = order.filter(d => d.p >= 0), dn = order.find(d => d.p < 0), step = (W - 340) / ups.length;
+  let s = `<circle cx="180" cy="90" r="50" fill="#f0b030" opacity=".85"/>`;
+  const pos = ups.map((d, i) => ({ d, x: 340 + step * i + step / 2 }));
+  [...pos].sort((a, b) => b.d.p - a.d.p).forEach(({ d, x }) => {
+    const h = d.p * k, hw = h * 0.9 + 60, py = base - h;
+    s += `<polygon points="${x - hw},${base} ${x},${py} ${x + hw},${base}" fill="${d.c}"/><polygon points="${x},${py} ${x + hw},${base} ${x + hw * 0.25},${base}" fill="${shade(d.c, -0.25)}"/>`;
+    const sc = Math.min(0.28, 70 / h);
+    s += `<polygon points="${x - hw * sc},${py + h * sc} ${x},${py} ${x + hw * sc},${py + h * sc} ${x + hw * sc * 0.4},${py + h * sc * 0.75} ${x},${py + h * sc} ${x - hw * sc * 0.5},${py + h * sc * 0.7}" fill="#fff"/>`;
+  });
+  pos.forEach(({ d, x }) => {
+    const py = base - d.p * k;
+    s += `<line x1="${x}" y1="${py}" x2="${x}" y2="${py - 70}" stroke="#12171c" stroke-width="3"/><path d="M${x},${py - 70} l40,13 l-40,13 z" fill="${d.c}" stroke="#fff" stroke-width="2"/>`;
+    s += T(x, py - 84, 30, fp(d.p), { a: "middle", d: 1, w: 700, c: shade(d.c, -0.2) });
+  });
+  s += `<rect x="0" y="${base}" width="${W}" height="${H - base}" fill="#dfe6ea"/>`;
+  pos.forEach(({ d, x }) => s += T(x, base + 40, 17, d.n, { a: "middle", w: 500 }) + T(x, base + 74, 24, nf.format(d.b), { a: "middle", d: 1, w: 700 }));
+  const lx = 150;
+  s += `<ellipse cx="${lx}" cy="${base + 6}" rx="140" ry="22" fill="${dn.c}" opacity=".85"/>` + icG(dn.k, lx, base - 34, 40, dn.c, 2);
+  s += T(lx, base - 70, 30, fp(dn.p), { a: "middle", d: 1, w: 700, c: dn.c }) + T(lx, base + 62, 17, dn.n, { a: "middle", w: 500 }) + T(lx, base + 96, 24, nf.format(dn.b), { a: "middle", d: 1, w: 700 });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 27 Dergi kapağı
+V[27] = { name: "Dergi kapağı", bg: "#0e6b66", dark: true, title: "", sub: "", note: "", draw(W, H) {
+  const h = byB[0], rest = byP.filter(d => d !== h);
+  let bars = ""; let x = 0; seed = 11; while (x < 220) { const w = 2 + Math.floor(rnd() * 6); bars += `<rect x="${x}" y="0" width="${w}" height="70" fill="#fff"/>`; x += w + 2 + Math.floor(rnd() * 5); }
+  return `<div style="position:absolute;inset:0;display:grid;grid-template-columns:1.15fr 1fr;gap:60px">
+    <div style="display:flex;flex-direction:column;justify-content:space-between">
+      <div class="disp" style="font-size:210px;line-height:.82;color:#fff;letter-spacing:-.05em">FAALİYET<br><span style="color:#f0b030">2026</span></div>
+      <div>
+        <div style="font-size:26px;color:#cfe9e5;margin-bottom:8px">${h.n}</div>
+        <div class="disp" style="font-size:150px;line-height:.9;color:#fff">${nf.format(h.b)}</div>
+        <div style="display:flex;gap:20px;align-items:center;margin-top:16px"><span class="disp" style="font-size:48px;color:#f0b030">${fp(h.p)}</span><span style="font-size:20px;color:#cfe9e5">2025'te ${nf.format(h.a)}</span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:space-between;border-left:2px solid rgba(255,255,255,.25);padding-left:48px">
+      <div style="font-size:16px;letter-spacing:.2em;color:#cfe9e5">YILLIK RAPOR · ÖRNEK VERİ</div>
+      ${rest.map(d => `<div style="display:grid;grid-template-columns:200px 1fr;align-items:center;gap:20px">
+        <span class="disp" style="font-size:54px;color:${d.p >= 0 ? "#f0b030" : "#ff9a85"}">${fp(d.p)}</span>
+        <span style="color:#fff"><span style="display:block;font-size:22px;font-weight:600">${d.n}</span><span style="font-size:17px;color:#cfe9e5">${nf.format(d.a)} → ${nf.format(d.b)}</span></span></div>`).join("")}
+      <svg width="240" height="96" style="align-self:flex-end">${bars}<text x="0" y="92" font-size="14" fill="#fff" letter-spacing="3">2025 · 2026</text></svg>
+    </div></div>`;
+}};
+
+// 28 Polaroidler
+V[28] = { name: "Polaroid kartlar", bg: "#e9e4dc", title: "Yılın kareleri", sub: "Her kart bir alan: el yazısıyla başlık, altında 2026 rakamı ve değişim.", note: "", draw(W, H) {
+  const rot = [-4, 3, -2, 5, -3, 2, -5];
+  const card = (d, i) => `<div style="background:#fff;padding:16px 16px 18px;box-shadow:0 10px 24px rgba(40,30,20,.18);transform:rotate(${rot[i]}deg);position:relative;width:330px;justify-self:center">
+    <div style="position:absolute;top:-14px;left:50%;width:110px;height:30px;margin-left:-55px;background:rgba(240,200,110,.7);transform:rotate(${-rot[i] * 1.5}deg)"></div>
+    <div style="height:190px;background:${d.c};position:relative;overflow:hidden;display:grid;place-items:center;color:#fff">
+      <span style="position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.12);right:-80px;top:-90px"></span>
+      <span style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(0,0,0,.08);left:-50px;bottom:-60px"></span>
+      <span style="position:relative">${ic(d.k, 110, 1.5)}</span>
+      <span class="disp" style="position:absolute;right:12px;bottom:8px;font-size:30px">${fp(d.p)}</span>
+    </div>
+    <div style="font-family:Caveat,cursive;font-size:34px;line-height:1.1;margin-top:12px;color:#2b2b2b">${d.n}</div>
+    <div class="disp" style="font-size:34px;color:${d.c}">${nf.format(d.b)} <span style="font-family:var(--body);font-size:15px;font-weight:400;color:#7a7368;letter-spacing:0">2025: ${nf.format(d.a)}</span></div></div>`;
+  return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:34px 20px;padding-top:10px">${byB.slice(0, 4).map(card).join("")}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,330px);gap:34px 110px;justify-content:center;margin-top:34px">${byB.slice(4).map((d, i) => card(d, i + 4)).join("")}</div>`;
+}};
+
+// 29 Şehir silüeti
+V[29] = { name: "Şehir silüeti", bg: "linear-gradient(#18233a, #3a3f6b)", dark: true, title: "Büyüyen bir şehir", sub: "Her bina bir alan. Kesikli çerçeve 2025 yüksekliği (100), bina 2026.", note: "Endeks: 2025 = 100", draw(W, H) {
+  const base = H - 120, k = 3.9, n = 7, step = W / n, bw = 170;
+  let s = "";
+  seed = 3; for (let i = 0; i < 70; i++) s += `<circle cx="${rnd() * W}" cy="${rnd() * (base - 460)}" r="${rnd() * 1.8 + .4}" fill="#fff" opacity="${rnd() * .6 + .2}"/>`;
+  s += `<circle cx="${W - 120}" cy="60" r="40" fill="#f6e7b0"/><circle cx="${W - 104}" cy="50" r="36" fill="#18233a"/>`;
+  byP.forEach((d, i) => {
+    const x = step * i + (step - bw) / 2, h = (100 + d.p) * k, h25 = 100 * k;
+    s += `<rect x="${x}" y="${base - h}" width="${bw}" height="${h}" fill="${shade(d.c, -0.35)}"/><rect x="${x}" y="${base - h}" width="${bw}" height="10" fill="${d.c}"/>`;
+    seed = 20 + i;
+    for (let r = 0; r * 34 + 40 < h - 10; r++) for (let c = 0; c < 4; c++) s += `<rect x="${x + 18 + c * 38}" y="${base - h + 30 + r * 34}" width="22" height="18" rx="2" fill="${rnd() > .35 ? "#f6d77a" : "rgba(255,255,255,.08)"}"/>`;
+    s += `<rect x="${x - 6}" y="${base - h25}" width="${bw + 12}" height="${h25}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6 6" opacity=".55"/>`;
+    s += `<circle cx="${x + bw / 2}" cy="${base - h - 56}" r="30" fill="${d.c}"/>` + icG(d.k, x + bw / 2, base - h - 56, 32, "#fff", 2);
+    s += T(x + bw / 2, base - h - 102, 28, fp(d.p), { a: "middle", d: 1, w: 700, c: d.p >= 0 ? "#8ee0d4" : "#ff9a85" });
+    s += T(x + bw / 2, base + 40, 17, d.n, { a: "middle", w: 500, c: "#c9d2e3" }) + T(x + bw / 2, base + 76, 26, nf.format(d.b), { a: "middle", d: 1, w: 700, c: "#fff" });
+  });
+  s += `<rect x="0" y="${base}" width="${W}" height="4" fill="#0c1220"/>`;
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 30 Gezegenler
+V[30] = { name: "Gezegenler", bg: "#0b1020", dark: true, title: "Yedi gezegen", sub: "Gezegen alanı 2026 değeriyle orantılı (ortak ölçek). Kesikli halka 2025 büyüklüğü.", note: "Alan değerle orantılı", draw(W, H) {
+  let s = ""; seed = 5;
+  for (let i = 0; i < 160; i++) s += `<circle cx="${rnd() * W}" cy="${rnd() * H}" r="${rnd() * 1.6 + .3}" fill="#fff" opacity="${rnd() * .6 + .15}"/>`;
+  s += `<ellipse cx="${W / 2}" cy="${H * 0.5}" rx="${W * 0.55}" ry="${H * 0.28}" fill="none" stroke="#2a3456" stroke-width="2"/>`;
+  const kk = 150 / Math.sqrt(byB[0].b), xs = [210, 540, 820, 1050, 1250, 1440, 1630], ys = [0.47, 0.6, 0.38, 0.62, 0.4, 0.58, 0.44];
+  byB.forEach((d, i) => {
+    const r = kk * Math.sqrt(d.b), r25 = kk * Math.sqrt(d.a), x = xs[i], y = H * ys[i];
+    s += `<defs><radialGradient id="pl${i}" cx=".35" cy=".35" r=".75"><stop offset="0" stop-color="${shade(d.c, 0.35)}"/><stop offset="1" stop-color="${shade(d.c, -0.35)}"/></radialGradient></defs>`;
+    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#pl${i})"/><circle cx="${x}" cy="${y}" r="${r25}" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 5" opacity=".7"/>`;
+    if (i === 1) s += `<ellipse cx="${x}" cy="${y}" rx="${r * 1.6}" ry="${r * 0.35}" fill="none" stroke="${shade(d.c, 0.4)}" stroke-width="6" opacity=".7" transform="rotate(-14 ${x} ${y})"/>`;
+    if (r > 40) s += icG(d.k, x, y, Math.min(70, r * 0.6), "#fff", 2);
+    const ly = y + Math.max(r, 30) + 34;
+    s += T(x, ly, 17, d.n, { a: "middle", c: "#aab4d0", w: 500 }) + T(x, ly + 34, 26, nf.format(d.b), { a: "middle", d: 1, w: 700, c: "#fff" }) + T(x, ly + 62, 20, fp(d.p), { a: "middle", d: 1, w: 700, c: d.p >= 0 ? "#8ee0d4" : "#ff9a85" });
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 31 Kadranlar
+V[31] = { name: "Kadranlar", title: "Göstergeler kadranda", sub: "İbre 2025'e göre değişimi gösterir. Kadran −%10 ile +%30 arası.", note: "", draw(W, H) {
+  const R = 130, lo = -10, hi = 30, ang = v => Math.PI * (1 - (v - lo) / (hi - lo));
+  const arc = (cx, cy, v1, v2, r, col, w) => { const a1 = ang(v1), a2 = ang(v2); return `<path d="M${cx + r * Math.cos(a1)},${cy - r * Math.sin(a1)} A${r},${r} 0 0 1 ${cx + r * Math.cos(a2)},${cy - r * Math.sin(a2)}" fill="none" stroke="${col}" stroke-width="${w}"/>`; };
+  let s = "", i = 0;
+  [[4, 220], [3, 590]].forEach(([n, cy]) => {
+    const gap = W / 4;
+    for (let c = 0; c < n; c++, i++) {
+      const d = byP[i], cx = (W - (n - 1) * gap) / 2 + c * gap;
+      s += arc(cx, cy, lo, 0, R, "#f3c9bf", 26) + arc(cx, cy, 0, hi, R, "#d3e9e6", 26) + arc(cx, cy, Math.min(0, d.p), Math.max(0, d.p), R, d.c, 26);
+      for (let t = lo; t <= hi; t += 10) { const a = ang(t); s += `<line x1="${cx + (R + 18) * Math.cos(a)}" y1="${cy - (R + 18) * Math.sin(a)}" x2="${cx + (R + 28) * Math.cos(a)}" y2="${cy - (R + 28) * Math.sin(a)}" stroke="#9aa3ad" stroke-width="2"/>`; }
+      const a = ang(d.p);
+      s += `<line x1="${cx}" y1="${cy}" x2="${cx + (R - 26) * Math.cos(a)}" y2="${cy - (R - 26) * Math.sin(a)}" stroke="#12171c" stroke-width="6" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="14" fill="#12171c"/>`;
+      s += T(cx, cy + 56, 38, fp(d.p), { a: "middle", d: 1, w: 700, c: d.c }) + `<g>${icG(d.k, cx - 80, cy + 92, 26, d.c, 2)}</g>` + T(cx - 60, cy + 100, 18, d.n, { w: 500 });
+      s += T(cx, cy + 134, 18, `${nf.format(d.a)} → ${nf.format(d.b)}`, { a: "middle", c: "#66707a" });
+    }
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 32 Flamalar
+V[32] = { name: "Flama dizisi", bg: "#fbf6ee", title: "Kutlanacak yedi rakam", sub: "Her flama bir alan: ikon, değişim oranı ve 2026 rakamı.", note: "", draw(W, H) {
+  let s = "";
+  [[byB.slice(0, 4), 30], [byB.slice(4), 420]].forEach(([row, y]) => {
+    const n = row.length, pw = 210, ph = 230, gap = (W - 80) / n, sag = 50;
+    const x0 = 40, x1 = W - 40, cy = (x) => y + sag * (1 - Math.pow((2 * (x - x0) / (x1 - x0)) - 1, 2));
+    s += `<path d="M${x0},${y} Q${W / 2},${y + sag * 2} ${x1},${y}" fill="none" stroke="#8a7a66" stroke-width="3"/>`;
+    row.forEach((d, i) => {
+      const cx = x0 + gap * i + gap / 2, ty = cy(cx);
+      s += `<polygon points="${cx - pw / 2},${ty} ${cx + pw / 2},${ty} ${cx},${ty + ph}" fill="${d.c}"/><polygon points="${cx},${ty} ${cx + pw / 2},${ty} ${cx},${ty + ph}" fill="#000" opacity=".08"/>`;
+      s += icG(d.k, cx, ty + 52, 46, "#fff", 2) + T(cx, ty + 118, 28, fp(d.p), { a: "middle", d: 1, w: 700, c: "#fff" });
+      s += T(cx, ty + ph + 36, 18, d.n, { a: "middle", w: 500 }) + T(cx, ty + ph + 72, 30, nf.format(d.b), { a: "middle", d: 1, w: 700, c: shade(d.c, -0.15) });
+    });
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 33 Kum saati
+V[33] = { name: "Kum saati", bg: "#f1ece4", title: "Gönüllüler daha çok saat verdi", sub: "Alttaki kum yığını toplam gönüllü saatini gösterir; yığın yüksekliği değerle orantılı.", note: "Kum yüksekliği değerle orantılı", draw(W, H) {
+  const d = get("clock");
+  const glass = (cx, val, max, year, col) => {
+    const top = 30, hh = H - 140, mid = top + hh / 2, w = 260, bot = top + hh, f = val / max, sandTop = bot - (hh / 2 - 30) * f;
+    const half = t => w / 2 * (0.12 + 0.88 * Math.abs(t - mid) / (hh / 2));
+    const fillPts = []; for (let y = sandTop; y <= bot - 6; y += 6) fillPts.push([y, half(y)]);
+    const poly = fillPts.map(([y, hw]) => `${cx - hw + 6},${y}`).concat(fillPts.reverse().map(([y, hw]) => `${cx + hw - 6},${y}`)).join(" ");
+    return `<rect x="${cx - w / 2 - 30}" y="${top - 26}" width="${w + 60}" height="26" rx="8" fill="#7a5230"/><rect x="${cx - w / 2 - 30}" y="${bot}" width="${w + 60}" height="26" rx="8" fill="#7a5230"/>
+      <path d="M${cx - w / 2},${top} C${cx - w / 2},${mid - 80} ${cx - 16},${mid - 30} ${cx - 16},${mid} C${cx - 16},${mid + 30} ${cx - w / 2},${mid + 80} ${cx - w / 2},${bot} H${cx + w / 2} C${cx + w / 2},${mid + 80} ${cx + 16},${mid + 30} ${cx + 16},${mid} C${cx + 16},${mid - 30} ${cx + w / 2},${mid - 80} ${cx + w / 2},${top} Z" fill="#fff" opacity=".7" stroke="#b9ad99" stroke-width="4"/>
+      <polygon points="${poly}" fill="${col}"/><line x1="${cx}" y1="${mid}" x2="${cx}" y2="${sandTop}" stroke="${col}" stroke-width="3"/>
+      ${T(cx, mid - 100, 26, year, { a: "middle", w: 700, d: 1, c: "#8a7a66" })}${T(cx, bot + 70, 34, nf.format(val), { a: "middle", d: 1, w: 700, c: shade(col, -0.2) })}`;
+  };
+  let s = glass(330, d.a, d.b, "2025", "#c9b48f") + glass(820, d.b, d.b, "2026", d.c);
+  s += T(1130, 300, 140, fp(d.p), { d: 1, w: 700, c: d.c }) + T(1130, 350, 26, `${fd(d.b - d.a)} saat`, { c: "#5a5045" });
+  s += icG("clock", 1156, 440, 52, d.c, 2) + T(1200, 450, 20, "Gönüllü çalışma saati", { c: "#66707a" });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
 const n = +location.hash.slice(1) || 14, v = V[n];
+if (!v.title) document.getElementById("h").style.display = "none";
 if (v.bg) document.body.style.background = v.bg;
 if (v.dark) { document.body.style.color = "#fff"; document.documentElement.style.setProperty("--muted", "#8fa1aa"); }
-document.getElementById("h").innerHTML = `<div class="eyebrow">Örnek ${n} · ${v.name}</div><h1>${v.title}</h1><p>${v.sub}</p>`;
+document.getElementById("h").innerHTML = v.title ? `<div class="eyebrow">Örnek ${n} · ${v.name}</div><h1>${v.title}</h1><p>${v.sub}</p>` : `<div class="eyebrow">Örnek ${n} · ${v.name}</div>`;
 document.getElementById("f").innerHTML = `<span>Örnek veri${v.note ? " · " + v.note : ""}</span><span>Değişim = (2026 − 2025) ÷ 2025</span>`;
 const c = document.getElementById("c");
 c.innerHTML = v.draw(c.clientWidth, c.clientHeight);

@@ -45,7 +45,7 @@ h1 { font-family: var(--display); font-size: 28px; margin: 0; letter-spacing: -.
 <div class="wrap">
   <div>
     <h1>2025 → 2026 görselleştirme örnekleri</h1>
-    <p class="sub">Aynı örnek veri, 23 farklı tarz: 10 görsel ağırlıklı, 13 veri ağırlıklı. Hepsi 16:9 PNG (3840×2160).</p>
+    <p class="sub">Aynı örnek veri, 33 farklı tarz: 20 görsel ağırlıklı, 13 veri ağırlıklı. Hepsi 16:9 PNG (3840×2160).</p>
   </div>
   <nav class="tabs" id="tabs" role="tablist" aria-label="Örnekler"></nav>
   <section id="view"></section>
@@ -76,6 +76,16 @@ const ITEMS = [
   ["Yol haritası", "2025'ten 2026'ya yol boyunca duraklar", "g"],
   ["İzometrik kuleler", "Gri kule 2025, renkli kule 2026", "g"],
   ["Merkez ve uydular", "Koyu zemin, merkezde özet, etrafta alanlar", "g"],
+  ["Kavanozlar", "Doluluk 2026, kesikli çizgi 2025 seviyesi", "g"],
+  ["Balonlar", "Balon yüksekliği değişim oranı", "g"],
+  ["Dağ zirveleri", "Zirve yüksekliği büyüme, göl düşüş", "g"],
+  ["Dergi kapağı", "Kapak tipografisi, büyük rakam ve kapak başlıkları", "g"],
+  ["Polaroid kartlar", "Bantlı fotoğraf kartları, el yazısı başlık", "g"],
+  ["Şehir silüeti", "Her bina bir alan, gece manzarası", "g"],
+  ["Gezegenler", "Gezegen alanı değerle orantılı, uzay zemini", "g"],
+  ["Kadranlar", "İbre değişim oranını gösterir", "g"],
+  ["Flama dizisi", "Kutlama flamaları, ikon ve oran", "g"],
+  ["Kum saati", "Gönüllü saatleri kum yığını olarak", "g"],
 ].map(([name, desc, g], i) => ({ id: "o" + String(i + 1).padStart(2, "0"), n: i + 1, name, desc, g: g ? "Görsel ağırlıklı" : "Veri ağırlıklı", src: `ornek-${String(i + 1).padStart(2, "0")}.png` }));
 const ORDER = [...ITEMS.filter(x => x.g === "Görsel ağırlıklı"), ...ITEMS.filter(x => x.g === "Veri ağırlıklı")];
 
