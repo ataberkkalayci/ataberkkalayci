@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f3f5f6; --card: #ffffff; --ink: #12171c; --muted: #6a737d; --line: #e2e6ea;
+  --y25: #c3cad2; --y26: #0e6b66; --soft: #dcefed; --down: #b4442f; --downsoft: #f6e3de;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1920px; height: 1080px; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-variant-numeric: tabular-nums;
+  padding: 60px 72px 48px; display: flex; flex-direction: column; gap: 28px; overflow: hidden;
+}
+header .eyebrow { font-size: 15px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+header h1 { font-family: var(--display); font-weight: 700; font-size: 50px; letter-spacing: -.03em; line-height: 1.05; margin-top: 8px; }
+header h1 .a { color: #a3abb4; } header h1 .b { color: var(--y26); }
+header p { font-size: 18px; color: var(--muted); margin-top: 8px; }
+#c { flex: 1; min-height: 0; position: relative; }
+footer { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+svg.ic { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+svg text { font-family: var(--body); }
+.disp { font-family: var(--display); font-weight: 700; letter-spacing: -.03em; }
+.chip { font-family: var(--display); font-weight: 700; padding: 4px 12px; border-radius: 99px; font-size: 20px; white-space: nowrap; }
+.chip.up { background: var(--soft); color: var(--y26); } .chip.down { background: var(--downsoft); color: var(--down); }
+.badge { border-radius: 12px; display: grid; place-items: center; background: var(--soft); color: var(--y26); flex: none; }
+.badge.down { background: var(--downsoft); color: var(--down); }
+.muted { color: var(--muted); }
+.up-c { color: var(--y26); } .down-c { color: var(--down); }
+</style>
+</head>
+<body>
+<header id="h"></header>
+<div id="c"></div>
+<footer id="f"></footer>
+<script>
+const ICONS = {
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  drop: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+  box: '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+  health: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
+  cap: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+  home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+};
+const ic = (k, s = 24) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24">${ICONS[k]}</svg>`;
+const icG = (k, x, y, s, color) => `<g transform="translate(${x},${y}) scale(${s / 24})" fill="none" stroke="${color}" stroke-width="${1.8}" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</g>`;
+
+// [gösterge, birim, 2025, 2026, ikon]
+const DATA = [
+  ["Ulaşılan kişi",          "kişi",    1842300, 2156900, "users"],
+  ["Gönüllü çalışma saati",  "saat",    1205700, 1390050, "clock"],
+  ["Temiz suya erişim",      "kişi",     512000,  638400, "drop"],
+  ["Dağıtılan gıda kolisi",  "koli",     384120,  452760, "box"],
+  ["Sağlık taraması",        "kişi",      96450,   88310, "health"],
+  ["Barınma desteği",        "hane",      68420,   74150, "home"],
+  ["Burs alan öğrenci",      "öğrenci",   24860,   31240, "cap"],
+].map(([n, u, a, b, k]) => ({ n, u, a, b, k, p: (b - a) / a * 100 }));
+const C = { ink: "#12171c", muted: "#6a737d", line: "#e2e6ea", y25: "#c3cad2", y26: "#0e6b66", down: "#b4442f" };
+const nf = new Intl.NumberFormat("tr-TR");
+const pf = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const fp = p => (p >= 0 ? "+" : "−") + "%" + pf.format(Math.abs(p));
+const fd = d => (d >= 0 ? "+" : "−") + nf.format(Math.abs(d));
+const dir = d => d.p >= 0 ? "up" : "down";
+const col = d => d.p >= 0 ? C.y26 : C.down;
+const byB = [...DATA].sort((x, y) => y.b - x.b);
+const byP = [...DATA].sort((x, y) => y.p - x.p);
+const chip = d => `<span class="chip ${dir(d)}">${fp(d.p)}</span>`;
+const TITLE = `<span class="a">2025</span> → <span class="b">2026</span>`;
+
+const V = {};
+
+// 02 Ok grafiği (logaritmik ölçek)
+V[2] = { name: "Ok grafiği", title: "Her gösterge nereden nereye gitti?", sub: "Gri nokta 2025, okun ucu 2026. Yatay eksen logaritmik: büyük ve küçük rakamlar aynı grafikte okunur.",
+  note: "Eksen logaritmik ölçekli", draw(W, H) {
+  const L = 400, R = 190, T = 50, B = 10, lo = Math.log10(15000), hi = Math.log10(3200000);
+  const x = v => L + (Math.log10(v) - lo) / (hi - lo) * (W - L - R);
+  const rh = (H - T - B) / DATA.length;
+  let s = `<defs>${["up", "down"].map(k => `<marker id="ah-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="3.6" markerHeight="3.6" orient="auto"><path d="M0,0L10,5L0,10z" fill="${k === "up" ? C.y26 : C.down}"/></marker>`).join("")}</defs>`;
+  [[2e4, "20 bin"], [5e4, "50 bin"], [1e5, "100 bin"], [2e5, "200 bin"], [5e5, "500 bin"], [1e6, "1 milyon"], [2e6, "2 milyon"]].forEach(([v, t]) => {
+    s += `<line x1="${x(v)}" x2="${x(v)}" y1="${T - 8}" y2="${H - B}" stroke="${C.line}"/><text x="${x(v)}" y="${T - 20}" text-anchor="middle" font-size="15" fill="${C.muted}">${t}</text>`;
+  });
+  byB.forEach((d, i) => {
+    const cy = T + rh * i + rh / 2, xa = x(d.a), xb = x(d.b), up = d.p >= 0;
+    s += `<line x1="0" x2="${W}" y1="${T + rh * i}" y2="${T + rh * i}" stroke="${C.line}" opacity="${i ? 1 : 0}"/>`;
+    s += icG(d.k, 0, cy - 14, 28, col(d)) + `<text x="44" y="${cy + 7}" font-size="21" font-weight="500" fill="${C.ink}">${d.n}</text>`;
+    s += `<line x1="${xa}" x2="${xb}" y1="${cy}" y2="${cy}" stroke="${col(d)}" stroke-width="5" marker-end="url(#ah-${dir(d)})"/>`;
+    s += `<circle cx="${xa}" cy="${cy}" r="8" fill="${C.y25}"/>`;
+    s += `<text x="${up ? xa - 16 : xa + 16}" y="${cy + 6}" text-anchor="${up ? "end" : "start"}" font-size="16" fill="${C.muted}">${nf.format(d.a)}</text>`;
+    s += `<text x="${up ? xb + 14 : xb - 14}" y="${cy + 6}" text-anchor="${up ? "start" : "end"}" font-size="18" font-weight="600" fill="${C.ink}">${nf.format(d.b)}</text>`;
+    s += `<text x="${W}" y="${cy + 9}" text-anchor="end" font-size="26" font-weight="700" fill="${col(d)}" font-family="Familjen Grotesk">${fp(d.p)}</text>`;
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 03 Eğim grafiği (endeks)
+V[3] = { name: "Eğim grafiği", title: "2025'i 100 kabul edersek", sub: "Her çizgi bir gösterge. 2025 değeri 100'e eşitlendi; çizginin eğimi büyümenin hızını gösterir.",
+  note: "Endeks: 2025 = 100", draw(W, H) {
+  const x1 = 560, x2 = 1060, T = 50, B = 30, lo = 85, hi = 130;
+  const y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  let s = "";
+  for (let t = 90; t <= 130; t += 10) s += `<line x1="${x1 - 60}" x2="${x2 + 40}" y1="${y(t)}" y2="${y(t)}" stroke="${C.line}"/><text x="${x1 - 74}" y="${y(t) + 5}" text-anchor="end" font-size="15" fill="${C.muted}">${t}</text>`;
+  s += `<line x1="${x1}" x2="${x1}" y1="${T - 10}" y2="${H - B}" stroke="${C.muted}"/><line x1="${x2}" x2="${x2}" y1="${T - 10}" y2="${H - B}" stroke="${C.muted}"/>`;
+  s += `<text x="${x1}" y="${T - 22}" text-anchor="middle" font-size="22" font-weight="700" fill="${C.muted}" font-family="Familjen Grotesk">2025</text><text x="${x2}" y="${T - 22}" text-anchor="middle" font-size="22" font-weight="700" fill="${C.y26}" font-family="Familjen Grotesk">2026</text>`;
+  // etiket çakışmasını önle
+  const pts = byP.map(d => ({ d, y: y(100 + d.p) }));
+  for (let i = 1; i < pts.length; i++) pts[i].ly = Math.max(pts[i].y, (pts[i - 1].ly ?? pts[i - 1].y) + 52);
+  pts[0].ly = pts[0].y;
+  pts.forEach(({ d, y: yy, ly }) => {
+    s += `<line x1="${x1}" y1="${y(100)}" x2="${x2}" y2="${yy}" stroke="${col(d)}" stroke-width="${3}" opacity=".9"/>`;
+    s += `<circle cx="${x2}" cy="${yy}" r="7" fill="${col(d)}"/>`;
+    s += `<path d="M${x2 + 12},${yy} L${x2 + 40},${ly}" stroke="${C.line}" fill="none"/>`;
+    s += icG(d.k, x2 + 52, ly - 14, 26, col(d));
+    s += `<text x="${x2 + 92}" y="${ly + 8}" font-size="24" font-weight="700" fill="${col(d)}" font-family="Familjen Grotesk">${fp(d.p)}</text>`;
+    s += `<text x="${x2 + 200}" y="${ly + 7}" font-size="19" fill="${C.ink}">${d.n}</text>`;
+  });
+  s += `<circle cx="${x1}" cy="${y(100)}" r="8" fill="${C.y25}"/><text x="${x1 - 20}" y="${y(100) - 16}" text-anchor="end" font-size="16" fill="${C.muted}">tüm göstergeler</text>`;
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 04 Eşleştirilmiş çubuklar
+V[4] = { name: "Eşleştirilmiş çubuklar", title: TITLE, sub: "Her satırda iki yılın değeri yan yana. Çubuklar o satırın en büyük değerine göre ölçeklenir.",
+  note: "Her satır kendi ölçeğinde", draw(W, H) {
+  const rh = H / DATA.length;
+  return `<div style="display:grid;grid-auto-rows:${rh}px">${byB.map((d, i) => {
+    const m = Math.max(d.a, d.b);
+    const bar = (v, c, b) => `<div style="display:grid;grid-template-columns:48px 1fr;align-items:center;gap:10px;font-size:13px;color:var(--muted)">${b}<div style="display:flex;align-items:center;gap:12px"><i style="display:block;height:20px;border-radius:4px;background:${c};width:calc((100% - 130px) * ${v / m})"></i><span style="font-size:18px;color:var(--ink);font-weight:${b === "2026" ? 600 : 400}">${nf.format(v)}</span></div></div>`;
+    return `<div style="display:grid;grid-template-columns:400px 1fr 150px;gap:28px;align-items:center;border-top:1px solid var(--line)${i === 6 ? ";border-bottom:1px solid var(--line)" : ""}">
+      <div style="display:flex;align-items:center;gap:14px;font-size:21px;font-weight:500"><span class="badge ${dir(d)}" style="width:46px;height:46px">${ic(d.k, 24)}</span>${d.n}</div>
+      <div style="display:grid;gap:6px">${bar(d.a, C.y25, "2025")}${bar(d.b, C.y26, "2026")}</div>
+      <div style="text-align:right">${chip(d)}</div></div>`;
+  }).join("")}</div>`;
+}};
+
+// 05 Tipografik tablo
+V[5] = { name: "Tipografik tablo", title: "Rakamlarla 2026", sub: "Grafik yok, sadece rakam. Gri 2025, siyah 2026, renkli değişim.",
+  note: "", draw(W, H) {
+  const rh = H / DATA.length;
+  return `<div style="display:grid;grid-auto-rows:${rh}px">${byB.map((d, i) => `
+    <div style="display:grid;grid-template-columns:420px 1fr 70px 1fr 220px;align-items:center;gap:16px;border-top:1px solid var(--line)${i === 6 ? ";border-bottom:1px solid var(--line)" : ""}">
+      <div style="display:flex;align-items:center;gap:14px;font-size:21px;font-weight:500"><span class="${dir(d)}-c">${ic(d.k, 30)}</span>${d.n}<span class="muted" style="font-size:15px;font-weight:400">${d.u}</span></div>
+      <div class="disp" style="font-size:44px;color:#a3abb4;text-align:right">${nf.format(d.a)}</div>
+      <div style="text-align:center;font-size:30px;color:var(--muted)">→</div>
+      <div class="disp" style="font-size:62px">${nf.format(d.b)}</div>
+      <div class="disp ${dir(d)}-c" style="font-size:40px;text-align:right">${fp(d.p)}</div>
+    </div>`).join("")}</div>`;
+}};
+
+// 06 Piktogram
+V[6] = { name: "Simge dizisi", title: "Her simge, 2025 değerinin onda biri", sub: "Gri sıra 2025'i, renkli sıra 2026'yı gösterir. 10'dan fazla simge büyüme, eksik simge düşüş demek.",
+  note: "1 simge = 2025 değerinin %10'u", draw(W, H) {
+  const S = 34, G = 7;
+  const row = (d, n, color) => {
+    let out = "";
+    for (let i = 0; i < Math.ceil(n); i++) {
+      const f = Math.min(1, n - i);
+      out += `<span style="display:block;width:${S * f}px;overflow:hidden;color:${color}">${ic(d.k, S)}</span>`;
+      if (f < 1) out += `<span style="width:${S * (1 - f)}px"></span>`;
+    }
+    return `<div style="display:flex;gap:${G}px;align-items:center">${out}</div>`;
+  };
+  return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px 56px;height:100%;align-content:space-between">${byB.map(d => `
+    <div style="display:grid;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:20px;font-weight:500">${d.n} <span class="muted" style="font-weight:400;font-size:16px">· ${nf.format(d.a)} → <b style="color:var(--ink)">${nf.format(d.b)}</b></span></span>${chip(d)}</div>
+      <div style="display:grid;grid-template-columns:50px 1fr;align-items:center;gap:8px;font-size:13px;color:var(--muted)">2025${row(d, 10, C.y25)}2026${row(d, d.b / d.a * 10, col(d))}</div>
+    </div>`).join("")}</div>`;
+}};
+
+// 07 Halkalar
+V[7] = { name: "Halka göstergeler", title: TITLE, sub: "Dış halka 2026, iç halka 2025. Uzun olan halka o yılın daha yüksek olduğunu gösterir.",
+  note: "Her halka kendi göstergesinin en büyük değerine göre", draw(W, H) {
+  const ring = d => {
+    const m = Math.max(d.a, d.b), S = 210, c = S / 2;
+    const arc = (r, f, color, w) => { const L = 2 * Math.PI * r; return `<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${L * f} ${L}" transform="rotate(-90 ${c} ${c})"/>`; };
+    return `<svg width="${S}" height="${S}">
+      <circle cx="${c}" cy="${c}" r="92" fill="none" stroke="#eef1f3" stroke-width="16"/><circle cx="${c}" cy="${c}" r="68" fill="none" stroke="#eef1f3" stroke-width="16"/>
+      ${arc(92, d.b / m * 0.999, col(d), 16)}${arc(68, d.a / m * 0.999, C.y25, 16)}
+      ${icG(d.k, c - 15, c - 26, 30, col(d))}
+      <text x="${c}" y="${c + 30}" text-anchor="middle" font-size="20" font-weight="700" fill="${col(d)}" font-family="Familjen Grotesk">${fp(d.p)}</text></svg>`;
+  };
+  return `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:16px;height:100%;align-items:center">${byB.map(d => `
+    <div style="background:var(--card);border-radius:20px;padding:28px 12px 26px;display:grid;justify-items:center;gap:16px;text-align:center">
+      ${ring(d)}
+      <div style="font-size:17px;font-weight:500;min-height:44px;line-height:1.3">${d.n}</div>
+      <div class="disp" style="font-size:32px">${nf.format(d.b)}</div>
+      <div class="muted" style="font-size:15px">2025: ${nf.format(d.a)}</div>
+    </div>`).join("")}</div>`;
+}};
+
+// 08 İç içe daireler
+V[8] = { name: "İç içe daireler", title: "Büyüklük de değişim de bir arada", sub: "Dairenin alanı değerle orantılı ve tüm göstergeler aynı ölçekte. Gri iç daire 2025, dış daire 2026.",
+  note: "Daire alanı değerle orantılı, ortak ölçek", draw(W, H) {
+  const labelH = 150, minCol = 190, gap = 24;
+  let k = 1;
+  const widths = kk => byB.map(d => Math.max(2 * kk * Math.sqrt(Math.max(d.a, d.b)), minCol));
+  k = (H - labelH - 10) / (2 * Math.sqrt(byB[0].b));
+  while (widths(k).reduce((s, w) => s + w, 0) + gap * 6 > W) k *= 0.98;
+  const ws = widths(k), total = ws.reduce((s, w) => s + w, 0) + gap * 6;
+  let x = (W - total) / 2, s = "";
+  const base = H - labelH;
+  byB.forEach((d, i) => {
+    const cx = x + ws[i] / 2, ra = k * Math.sqrt(d.a), rb = k * Math.sqrt(d.b);
+    const big = Math.max(ra, rb);
+    if (d.p >= 0) s += `<circle cx="${cx}" cy="${base - rb}" r="${rb}" fill="${C.y26}"/><circle cx="${cx}" cy="${base - ra}" r="${ra}" fill="${C.y25}"/>`;
+    else s += `<circle cx="${cx}" cy="${base - ra}" r="${ra}" fill="${C.y25}"/><circle cx="${cx}" cy="${base - rb}" r="${rb}" fill="${C.down}"/>`;
+    s += `<text x="${cx}" y="${base - 2 * big - 14}" text-anchor="middle" font-size="22" font-weight="700" fill="${col(d)}" font-family="Familjen Grotesk">${fp(d.p)}</text>`;
+    s += `<text x="${cx}" y="${base + 36}" text-anchor="middle" font-size="18" font-weight="500" fill="${C.ink}">${d.n}</text>`;
+    s += `<text x="${cx}" y="${base + 72}" text-anchor="middle" font-size="28" font-weight="700" fill="${C.ink}" font-family="Familjen Grotesk">${nf.format(d.b)}</text>`;
+    s += `<text x="${cx}" y="${base + 100}" text-anchor="middle" font-size="15" fill="${C.muted}">2025: ${nf.format(d.a)}</text>`;
+    x += ws[i] + gap;
+  });
+  s += `<line x1="0" x2="${W}" y1="${base}" y2="${base}" stroke="${C.line}"/>`;
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 09 Lolipop
+V[9] = { name: "Lolipop grafik", title: "Hangi gösterge ne kadar değişti?", sub: "Sıfır çizgisinden sağa uzanan büyüme, sola uzanan düşüş. Yüksekten düşüğe sıralı.",
+  note: "", draw(W, H) {
+  const L = 470, R = 60, T = 10, B = 44, lo = -10, hi = 30;
+  const x = v => L + (v - lo) / (hi - lo) * (W - L - R);
+  const rh = (H - T - B) / DATA.length;
+  let s = "";
+  for (let t = lo; t <= hi; t += 10) s += `<line x1="${x(t)}" x2="${x(t)}" y1="${T}" y2="${H - B}" stroke="${t ? C.line : C.muted}" stroke-width="${t ? 1 : 1.5}"/><text x="${x(t)}" y="${H - 12}" text-anchor="middle" font-size="15" fill="${C.muted}">${t === 0 ? "0" : (t > 0 ? "+" : "−") + "%" + Math.abs(t)}</text>`;
+  byP.forEach((d, i) => {
+    const cy = T + rh * i + rh / 2;
+    s += icG(d.k, 0, cy - 15, 30, col(d));
+    s += `<text x="46" y="${cy - 2}" font-size="21" font-weight="500" fill="${C.ink}">${d.n}</text><text x="46" y="${cy + 22}" font-size="15" fill="${C.muted}">${nf.format(d.a)} → ${nf.format(d.b)}</text>`;
+    s += `<line x1="${x(0)}" x2="${x(d.p)}" y1="${cy}" y2="${cy}" stroke="${col(d)}" stroke-width="4"/><circle cx="${x(d.p)}" cy="${cy}" r="13" fill="${col(d)}"/>`;
+    s += `<text x="${x(d.p) + (d.p >= 0 ? 26 : -26)}" y="${cy + 8}" text-anchor="${d.p >= 0 ? "start" : "end"}" font-size="24" font-weight="700" fill="${col(d)}" font-family="Familjen Grotesk">${fp(d.p)}</text>`;
+  });
+  return `<svg width="${W}" height="${H}">${s}</svg>`;
+}};
+
+// 10 Küçük çoklu sütunlar
+V[10] = { name: "Küçük çoklu sütunlar", title: TITLE, sub: "Her gösterge kendi panelinde, sıfırdan başlayan iki sütunla.",
+  note: "Her panel kendi ölçeğinde", draw(W, H) {
+  return `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:16px;height:100%">${byB.map(d => {
+    const m = Math.max(d.a, d.b);
+    const colm = (v, c, y, bold) => `<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;height:100%">
+      <span style="font-size:15px;font-weight:${bold ? 700 : 400};color:${bold ? "var(--ink)" : "var(--muted)"}">${nf.format(v)}</span>
+      <i style="display:block;width:64px;height:${v / m * 100}%;max-height:calc(100% - 30px);background:${c};border-radius:6px 6px 0 0"></i></div>`;
+    return `<div style="background:var(--card);border-radius:20px;padding:22px 16px 18px;display:grid;grid-template-rows:auto 1fr auto auto;gap:14px">
+      <div style="display:grid;justify-items:center;gap:8px;text-align:center"><span class="badge ${dir(d)}" style="width:46px;height:46px">${ic(d.k, 24)}</span><span style="font-size:16px;font-weight:500;min-height:42px;line-height:1.3">${d.n}</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;align-items:end;border-bottom:1.5px solid var(--muted);min-height:0">${colm(d.a, C.y25, "2025")}${colm(d.b, col(d), "2026", 1)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:13px;color:var(--muted)"><span>2025</span><span>2026</span></div>
+      <div style="text-align:center">${chip(d)}</div></div>`;
+  }).join("")}</div>`;
+}};
+
+// 11 Bölünmüş ekran
+V[11] = { name: "Bölünmüş ekran", title: "İki yıl, karşı karşıya", sub: "Solda 2025, sağda 2026. Ortada gösterge ve değişim.",
+  note: "", draw(W, H) {
+  const hh = 56, rh = (H - hh) / DATA.length;
+  return `<div style="display:grid;grid-template-columns:1fr 480px 1fr;grid-template-rows:${hh}px repeat(7,${rh}px);height:100%">
+    <div class="disp" style="font-size:34px;color:#a3abb4;text-align:right;padding-right:40px;background:#e7eaed;border-radius:20px 0 0 0;padding-top:10px">2025</div><div style="background:var(--card)"></div>
+    <div class="disp" style="font-size:34px;color:var(--y26);padding-left:40px;background:var(--soft);border-radius:0 20px 0 0;padding-top:10px">2026</div>
+    ${byB.map((d, i) => `
+      <div class="disp" style="font-size:46px;color:#7d868f;text-align:right;padding-right:40px;background:#e7eaed;display:flex;align-items:center;justify-content:flex-end;${i === 6 ? "border-radius:0 0 0 20px" : ""}">${nf.format(d.a)}</div>
+      <div style="background:var(--card);display:flex;align-items:center;justify-content:space-between;padding:0 28px;gap:12px;border-top:1px solid var(--line)">
+        <span style="display:flex;align-items:center;gap:12px;font-size:19px;font-weight:500"><span class="${dir(d)}-c">${ic(d.k, 28)}</span>${d.n}</span>${chip(d)}</div>
+      <div class="disp" style="font-size:52px;color:var(--y26);padding-left:40px;background:var(--soft);display:flex;align-items:center;${i === 6 ? "border-radius:0 0 20px 0" : ""}">${nf.format(d.b)}</div>`).join("")}
+  </div>`;
+}};
+
+// 12 Koyu poster
+V[12] = { name: "Koyu poster", dark: true, title: TITLE, sub: "Öne çıkan bir gösterge ve altı destekleyici rakam, koyu zemin üzerinde.",
+  note: "", draw(W, H) {
+  const [h, ...rest] = byB;
+  const g = "#5cc4b9", r = "#ef8a72", gr = "#3a444c";
+  return `<div style="display:grid;grid-template-columns:720px 1fr;gap:56px;height:100%">
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:18px">
+      <div style="display:flex;align-items:center;gap:14px;font-size:22px;color:#a9b3bc"><span style="color:${g}">${ic(h.k, 34)}</span>${h.n}</div>
+      <div class="disp" style="font-size:150px;line-height:.95;color:#fff">${nf.format(h.b)}</div>
+      <div style="display:flex;gap:28px;align-items:baseline"><span class="disp" style="font-size:54px;color:${g}">${fp(h.p)}</span><span style="font-size:20px;color:#a9b3bc">2025: ${nf.format(h.a)} ${h.u}</span></div>
+      <div style="display:grid;gap:10px;margin-top:20px"><i style="display:block;height:14px;border-radius:7px;background:${gr};width:${h.a / h.b * 100}%"></i><i style="display:block;height:14px;border-radius:7px;background:${g}"></i></div>
+    </div>
+    <div style="display:grid;grid-auto-rows:1fr">${rest.map(d => {
+      const m = Math.max(d.a, d.b), c = d.p >= 0 ? g : r;
+      return `<div style="display:grid;grid-template-columns:44px 1fr 200px 120px;align-items:center;gap:20px;border-top:1px solid #232b31">
+        <span style="color:${c}">${ic(d.k, 30)}</span>
+        <div><div style="font-size:18px;color:#a9b3bc">${d.n}</div><div class="disp" style="font-size:40px;color:#fff">${nf.format(d.b)}</div></div>
+        <div style="display:grid;gap:6px"><i style="display:block;height:8px;border-radius:4px;background:${gr};width:${d.a / m * 100}%"></i><i style="display:block;height:8px;border-radius:4px;background:${c};width:${d.b / m * 100}%"></i></div>
+        <div class="disp" style="font-size:28px;color:${c};text-align:right">${fp(d.p)}</div></div>`;
+    }).join("")}</div></div>`;
+}};
+
+// 13 Yüzde ızgarası (değişim kartları)
+V[13] = { name: "Değişim kartları", title: "Yedi gösterge, yedi değişim", sub: "Kart rengi yönü, büyük rakam değişim oranını, altındaki fark mutlak artışı gösterir.",
+  note: "", draw(W, H) {
+  return `<div style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:20px;height:100%">${byP.map((d, i) => `
+    <div style="border-radius:22px;padding:28px 30px;display:flex;flex-direction:column;justify-content:space-between;background:${d.p >= 0 ? (i < 2 ? C.y26 : "var(--card)") : "var(--downsoft)"};color:${d.p >= 0 && i < 2 ? "#fff" : "var(--ink)"}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><span style="font-size:20px;font-weight:500;line-height:1.3">${d.n}</span><span style="color:${d.p >= 0 ? (i < 2 ? "#fff" : C.y26) : C.down}">${ic(d.k, 32)}</span></div>
+      <div class="disp" style="font-size:76px;line-height:1;color:${d.p >= 0 ? (i < 2 ? "#fff" : C.y26) : C.down}">${fp(d.p)}</div>
+      <div style="font-size:16px;opacity:.8">${fd(d.b - d.a)} ${d.u}<br>${nf.format(d.a)} → <b>${nf.format(d.b)}</b></div>
+    </div>`).join("")}
+    <div style="border-radius:22px;padding:28px 30px;display:flex;flex-direction:column;justify-content:center;gap:10px;border:1.5px dashed var(--line)">
+      <div class="muted" style="font-size:15px;letter-spacing:.12em;text-transform:uppercase">Özet</div>
+      <div class="disp" style="font-size:44px;line-height:1.05">6 artış<br><span class="down-c">1 düşüş</span></div>
+    </div></div>`;
+}};
+
+const n = +location.hash.slice(1) || 2, v = V[n];
+if (v.dark) {
+  document.body.style.background = "#0d1215"; document.body.style.color = "#fff";
+  document.documentElement.style.setProperty("--muted", "#8c97a1");
+}
+document.getElementById("h").innerHTML = `<div class="eyebrow">Örnek ${String(n).padStart(2, "0")} · ${v.name}</div><h1>${v.title}</h1><p>${v.sub}</p>`;
+document.getElementById("f").innerHTML = `<span>Örnek veri${v.note ? " · " + v.note : ""}</span><span>Değişim = (2026 − 2025) ÷ 2025</span>`;
+const c = document.getElementById("c");
+c.innerHTML = v.draw(c.clientWidth, c.clientHeight);
+</script>
+</body>
+</html>

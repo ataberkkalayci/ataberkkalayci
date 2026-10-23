@@ -1,0 +1,92 @@
+<title>Infografik Örnekleri</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: üstte sekme şeridi, altında seçili görsel tam genişlikte */
+:root {
+  --bg: #f3f5f6; --surface: #ffffff; --ink: #12171c; --muted: #6a737d; --line: #e2e6ea; --accent: #0e6b66; --accent-soft: #dcefed;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #101417; --surface: #181d21; --ink: #eef1f3; --muted: #9aa3ad; --line: #2a3036; --accent: #4fbab2; --accent-soft: #173533; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #101417; --surface: #181d21; --ink: #eef1f3; --muted: #9aa3ad; --line: #2a3036; --accent: #4fbab2; --accent-soft: #173533; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); }
+.wrap {
+  max-width: 1400px; margin: 0 auto; padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 18px;
+}
+h1 { font-family: var(--display); font-size: 28px; margin: 0; letter-spacing: -.02em; }
+.sub { color: var(--muted); margin: 4px 0 0; font-size: 14px; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.tabs button {
+  flex: none; font: 500 13px var(--body); color: var(--muted); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 99px; padding: 7px 14px; cursor: pointer; white-space: nowrap;
+}
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stage { display: grid; gap: 10px; }
+.stage img { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; background: var(--surface); }
+.cap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.cap b { color: var(--ink); font-weight: 500; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.grid button { all: unset; cursor: pointer; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.grid button img { width: 100%; border-radius: 8px; border: 1px solid var(--line); display: block; }
+.grid button:hover img, .grid button:focus-visible img { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <div>
+    <h1>2025 → 2026 görselleştirme örnekleri</h1>
+    <p class="sub">Aynı örnek veri, 13 farklı tarz. Hepsi 16:9 PNG (3840×2160).</p>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Örnekler"></nav>
+  <section id="view"></section>
+</div>
+
+<script>
+const ITEMS = [
+  ["Kartlar + sütun", "İkonlu gösterge kartları ve değişim oranı sütun grafiği"],
+  ["Ok grafiği", "Gri nokta 2025, ok ucu 2026; logaritmik eksen"],
+  ["Eğim grafiği", "2025 = 100 endeksli; çizgi eğimi büyüme hızı"],
+  ["Eşleştirilmiş çubuklar", "Her satırda iki yılın çubuğu yan yana"],
+  ["Tipografik tablo", "Grafiksiz; büyük rakam ve değişim"],
+  ["Simge dizisi", "Her simge 2025 değerinin %10'u"],
+  ["Halka göstergeler", "Dış halka 2026, iç halka 2025"],
+  ["İç içe daireler", "Alan değerle orantılı, ortak ölçek"],
+  ["Lolipop grafik", "Sıfırdan uzanan yüzde değişim, sıralı"],
+  ["Küçük çoklu sütunlar", "Her gösterge kendi panelinde"],
+  ["Bölünmüş ekran", "Solda 2025, sağda 2026, karşı karşıya"],
+  ["Koyu poster", "Koyu zemin, öne çıkan rakam ve liste"],
+  ["Değişim kartları", "Büyük yüzde oranı, renk yönü gösterir"],
+].map(([name, desc], i) => ({ id: "o" + String(i + 1).padStart(2, "0"), n: i + 1, name, desc, src: `ornek-${String(i + 1).padStart(2, "0")}.png` }));
+
+const tabs = document.getElementById("tabs"), view = document.getElementById("view");
+const all = { id: "tumu", name: "Tümü" };
+[all, ...ITEMS].forEach(it => {
+  const b = document.createElement("button");
+  b.id = "tab-" + it.id; b.role = "tab"; b.dataset.id = it.id;
+  b.textContent = it.n ? `${String(it.n).padStart(2, "0")} · ${it.name}` : it.name;
+  b.onclick = () => show(it.id);
+  tabs.append(b);
+});
+
+function show(id) {
+  const it = ITEMS.find(x => x.id === id);
+  tabs.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.id === (it ? id : "tumu")));
+  if (it) {
+    view.innerHTML = `<div class="stage"><img src="${it.src}" alt="Örnek ${it.n}: ${it.name}">
+      <div class="cap"><span><b>${String(it.n).padStart(2, "0")} · ${it.name}</b> — ${it.desc}</span><span>Örnek veri</span></div></div>`;
+  } else {
+    view.innerHTML = `<div class="grid">${ITEMS.map(x => `<button data-id="${x.id}"><img src="${x.src}" alt="" loading="lazy"><span>${String(x.n).padStart(2, "0")} · ${x.name}</span></button>`).join("")}</div>`;
+    view.querySelectorAll(".grid button").forEach(b => b.onclick = () => { show(b.dataset.id); window.scrollTo(0, 0); });
+  }
+  document.getElementById("tab-" + (it ? id : "tumu")).scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+const h = location.hash.slice(1);
+show(ITEMS.some(x => x.id === h) ? h : "tumu");
+</script>
