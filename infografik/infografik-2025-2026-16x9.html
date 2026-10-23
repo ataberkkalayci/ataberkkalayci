@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f3f5f6; --card: #ffffff; --ink: #12171c; --muted: #6a737d; --line: #e2e6ea;
+  --y25: #c3cad2; --y26: #0e6b66; --y26soft: #dcefed; --down: #b4442f; --downsoft: #f6e3de;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1920px; height: 1080px; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body);
+  font-variant-numeric: tabular-nums; padding: 72px;
+  display: grid; grid-template-columns: 620px 1fr; gap: 48px; overflow: hidden;
+}
+svg.ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Sol sütun */
+.left { display: flex; flex-direction: column; gap: 32px; min-height: 0; }
+.eyebrow { font-size: 17px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--display); font-weight: 700; font-size: 124px; line-height: .92; letter-spacing: -.04em; margin-top: 14px; }
+h1 .a { color: #a3abb4; } h1 .b { color: var(--y26); }
+.lede { font-size: 19px; color: var(--muted); line-height: 1.5; margin-top: 18px; max-width: 32ch; }
+.legend { display: flex; gap: 24px; font-size: 16px; color: var(--muted); margin-top: 18px; }
+.legend span { display: flex; align-items: center; gap: 8px; }
+.legend i { width: 20px; height: 8px; border-radius: 4px; display: block; }
+
+.hero {
+  flex: 1; background: var(--y26); color: #fff; border-radius: 26px; padding: 38px 40px 40px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.hero .head { display: flex; align-items: center; gap: 14px; font-size: 20px; }
+.hero .badge { width: 52px; height: 52px; border-radius: 14px; background: rgba(255,255,255,.16); display: grid; place-items: center; }
+.hero .badge svg.ic { width: 28px; height: 28px; }
+.hero .num { font-family: var(--display); font-weight: 700; font-size: 112px; line-height: 1; letter-spacing: -.045em; }
+.hero .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; }
+.hero .prev { font-size: 19px; opacity: .8; }
+.hero .prev b { font-weight: 600; }
+.hero .delta { font-family: var(--display); font-weight: 700; font-size: 44px; letter-spacing: -.02em; }
+.hero .bars { display: grid; gap: 9px; margin-top: 22px; }
+.hero .bars div { display: grid; grid-template-columns: 46px 1fr; align-items: center; gap: 10px; font-size: 14px; opacity: .9; }
+.hero .bars i { height: 12px; border-radius: 6px; display: block; }
+
+/* Sağ sütun */
+.right { display: grid; grid-template-rows: auto 1fr auto; gap: 20px; min-width: 0; min-height: 0; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.tile { background: var(--card); border-radius: 20px; padding: 24px 26px 22px; display: flex; flex-direction: column; gap: 14px; }
+.tile .head { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 500; }
+.tile .badge { width: 42px; height: 42px; border-radius: 12px; background: var(--y26soft); color: var(--y26); display: grid; place-items: center; flex: none; }
+.tile .badge.down { background: var(--downsoft); color: var(--down); }
+.tile .num { font-family: var(--display); font-weight: 700; font-size: 50px; letter-spacing: -.035em; line-height: 1; }
+.tile .unit { font-size: 15px; color: var(--muted); font-family: var(--body); font-weight: 400; letter-spacing: 0; margin-left: 6px; }
+.mini { display: grid; gap: 6px; }
+.mini div { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.mini i { height: 9px; border-radius: 5px; display: block; }
+.tile .foot { display: flex; justify-content: space-between; align-items: center; font-size: 15px; color: var(--muted); }
+.chip { font-family: var(--display); font-weight: 700; font-size: 18px; padding: 4px 11px; border-radius: 99px; }
+.chip.up { background: var(--y26soft); color: var(--y26); }
+.chip.down { background: var(--downsoft); color: var(--down); }
+
+.chart { background: var(--card); border-radius: 20px; padding: 24px 30px 14px; display: flex; flex-direction: column; min-height: 0; }
+.chart h2 { font-family: var(--display); font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
+.chart h2 small { font-family: var(--body); font-weight: 400; font-size: 16px; color: var(--muted); margin-left: 10px; letter-spacing: 0; }
+.chart svg { flex: 1; min-height: 0; }
+.chart svg text { font-family: var(--body); }
+.note { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <section class="left">
+    <div>
+      <div class="eyebrow">Yıllık faaliyet karşılaştırması</div>
+      <h1><span class="a">2025</span><br><span class="b">2026</span></h1>
+      <p class="lede">Yedi temel göstergede iki yılın karşılaştırması. Altı göstergede artış, birinde düşüş var.</p>
+      <div class="legend"><span><i style="background:var(--y25)"></i>2025</span><span><i style="background:var(--y26)"></i>2026</span></div>
+    </div>
+    <div class="hero" id="hero"></div>
+  </section>
+
+  <section class="right">
+    <div class="grid" id="grid"></div>
+    <div class="chart">
+      <h2>Değişim oranı <small>2025'e göre, yüksekten düşüğe</small></h2>
+      <svg id="chart" viewBox="0 0 1130 330" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="note"><span>Örnek veri · Gerçek tabloyla değiştirilecektir</span><span>Değişim = (2026 − 2025) ÷ 2025</span></div>
+  </section>
+
+<script>
+const ICONS = {
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  drop: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+  box: '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+  health: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
+  cap: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+  home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+};
+const ic = k => `<svg class="ic" viewBox="0 0 24 24">${ICONS[k]}</svg>`;
+
+// [gösterge, birim, 2025, 2026, ikon]
+const DATA = [
+  ["Ulaşılan kişi",          "kişi",    1842300, 2156900, "users"],
+  ["Gönüllü çalışma saati",  "saat",    1205700, 1390050, "clock"],
+  ["Temiz suya erişim",      "kişi",     512000,  638400, "drop"],
+  ["Dağıtılan gıda kolisi",  "koli",     384120,  452760, "box"],
+  ["Sağlık taraması",        "kişi",      96450,   88310, "health"],
+  ["Barınma desteği",        "hane",      68420,   74150, "home"],
+  ["Burs alan öğrenci",      "öğrenci",   24860,   31240, "cap"],
+];
+const nf = new Intl.NumberFormat("tr-TR");
+const pf = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const pct = (a, b) => (b - a) / a * 100;
+const fp = p => (p >= 0 ? "+" : "−") + "%" + pf.format(Math.abs(p));
+const fd = d => (d >= 0 ? "+" : "−") + nf.format(Math.abs(d));
+
+const [hero, ...rest] = [...DATA].sort((x, y) => y[3] - x[3]);
+{
+  const [n, u, a, b, k] = hero, p = pct(a, b);
+  document.getElementById("hero").innerHTML = `
+    <div class="head"><span class="badge">${ic(k)}</span>${n} · 2026</div>
+    <div>
+      <div class="num">${nf.format(b)}</div>
+      <div class="row"><span class="prev">2025: <b>${nf.format(a)}</b> ${u}</span><span class="delta">${fp(p)}</span></div>
+      <div class="bars">
+        <div>2025<i style="width:${a / b * 100}%;background:rgba(255,255,255,.4)"></i></div>
+        <div>2026<i style="width:100%;background:#fff"></i></div>
+      </div>
+    </div>`;
+}
+
+document.getElementById("grid").innerHTML = rest.map(([n, u, a, b, k]) => {
+  const p = pct(a, b), m = Math.max(a, b), dir = p >= 0 ? "up" : "down";
+  return `<div class="tile">
+    <div class="head"><span class="badge ${dir}">${ic(k)}</span>${n}</div>
+    <div class="num">${nf.format(b)}<span class="unit">${u}</span></div>
+    <div class="mini">
+      <div>2025<i style="width:${a / m * 100}%;background:var(--y25)"></i></div>
+      <div>2026<i style="width:${b / m * 100}%;background:var(--y26)"></i></div>
+    </div>
+    <div class="foot"><span>2025: ${nf.format(a)}</span><span class="chip ${dir}">${fp(p)}</span></div>
+  </div>`;
+}).join("");
+
+// Sütun grafiği: yüzde değişim
+(() => {
+  const W = 1130, H = 330, L = 52, R = 6, T = 26, B = 52;
+  const rows = DATA.map(([n, , a, b, k]) => ({ n, k, p: pct(a, b) })).sort((x, y) => y.p - x.p);
+  const step = 10;
+  const lo = Math.min(0, Math.floor(Math.min(...rows.map(r => r.p)) / step) * step);
+  const hi = Math.max(0, Math.ceil(Math.max(...rows.map(r => r.p)) / step) * step);
+  const y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const bw = (W - L - R) / rows.length;
+  let out = "";
+  for (let t = lo; t <= hi; t += step) {
+    out += `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" stroke="${t === 0 ? "#9aa3ad" : "#e2e6ea"}"/>`;
+    out += `<text x="${L - 10}" y="${y(t) + 5}" text-anchor="end" font-size="14" fill="#6a737d">${t === 0 ? "0" : (t > 0 ? "+" : "−") + "%" + Math.abs(t)}</text>`;
+  }
+  rows.forEach(({ n, p }, i) => {
+    const cx = L + bw * i + bw / 2, w = bw * 0.42;
+    const top = y(Math.max(0, p)), h = Math.abs(y(p) - y(0));
+    const c = p >= 0 ? "#0e6b66" : "#b4442f";
+    out += `<rect x="${cx - w / 2}" y="${top}" width="${w}" height="${h}" rx="4" fill="${c}"/>`;
+    const ly = y(Math.max(0, p)) - 9;
+    out += `<text x="${cx}" y="${ly}" text-anchor="middle" font-size="16" font-weight="600" fill="${c}">${fp(p)}</text>`;
+    const words = n.split(" ");
+    const l1 = words.length > 2 ? words.slice(0, 2).join(" ") : words[0];
+    const l2 = words.length > 2 ? words.slice(2).join(" ") : (words[1] || "");
+    out += `<text x="${cx}" y="${H - B + 24}" text-anchor="middle" font-size="14" fill="#12171c">${l1}</text>`;
+    out += `<text x="${cx}" y="${H - B + 42}" text-anchor="middle" font-size="14" fill="#12171c">${l2}</text>`;
+  });
+  document.getElementById("chart").innerHTML = out;
+})();
+</script>
+</body>
+</html>
