@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* 1080×1350 sosyal medya görselleri: #1–#8 karusel kartları, #poster merkez-logo posteri */
+:root {
+  --bg: #f3f4f6; --paper: #ffffff; --ink: #1c2127; --ink2: #5b636d; --ink3: #8a929b; --line: #e3e6ea; --tile: #f0f2f4;
+  --blue: #3b6fb6; --green: #3f8f5a; --yellow: #d3a12a; --red: #c0503f; --gray: #6b737c; --gray2: #9aa1a9;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1080px; height: 1350px; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-variant-numeric: tabular-nums; overflow: hidden; }
+.card { width: 1080px; height: 1350px; padding: 64px 72px 56px; display: flex; flex-direction: column; gap: 34px; position: relative; --c: var(--gray); }
+.top { display: flex; align-items: center; gap: 16px; font-size: 20px; color: var(--ink2); }
+.logo { width: 56px; height: 56px; border-radius: 50%; border: 2px dashed var(--gray2); display: grid; place-items: center; font-size: 11px; color: var(--ink3); letter-spacing: .06em; text-align: center; line-height: 1.1; flex: none; background: var(--paper); }
+.top .pg { margin-left: auto; font-weight: 600; color: var(--ink3); }
+.chh { display: flex; align-items: center; gap: 18px; }
+.si { width: 72px; height: 72px; border-radius: 20px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); flex: none; }
+.si svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.chh h2 { font-family: var(--display); font-size: 56px; letter-spacing: -.02em; line-height: 1; }
+.chh small { display: block; font-family: var(--body); font-size: 20px; font-weight: 400; color: var(--ink2); letter-spacing: 0; margin-top: 6px; }
+
+.eq { background: var(--paper); border-radius: 28px; padding: 34px 40px; display: grid; gap: 10px; }
+.eq .row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.eq .in b { font-family: var(--display); font-size: 64px; letter-spacing: -.03em; line-height: 1; }
+.eq .in span, .eq .out span { font-size: 24px; color: var(--ink2); }
+.eq .ar { font-size: 36px; color: var(--c); line-height: 1; padding-left: 8px; }
+.eq .out b { font-family: var(--display); font-size: 96px; letter-spacing: -.04em; line-height: .95; color: var(--c); }
+.eq .sub { font-size: 20px; color: var(--ink3); margin-top: 4px; }
+.chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.chips span { background: var(--tile); border-radius: 99px; padding: 6px 14px; font-size: 18px; color: var(--ink2); }
+.chips b { color: var(--ink); font-weight: 600; }
+
+.chart { flex: 1; display: grid; grid-template-columns: repeat(var(--g, 2), 1fr); gap: 28px; min-height: 0; }
+.grp { background: var(--paper); border-radius: 28px; padding: 26px 28px 22px; display: grid; grid-template-rows: auto 1fr auto; gap: 12px; min-height: 0; }
+.grp .gh { display: flex; justify-content: space-between; align-items: baseline; font-size: 22px; font-weight: 600; }
+.up { font-family: var(--display); font-size: 26px; color: var(--ink); white-space: nowrap; }
+.up.down { color: var(--red); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: end; border-bottom: 2px solid var(--line); min-height: 0; }
+.col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 10px; height: 100%; }
+.col span { font-size: 19px; font-weight: 600; white-space: nowrap; }
+.col span.dim { color: var(--ink3); font-weight: 500; }
+.col i { display: block; width: 100%; max-width: 130px; border-radius: 12px 12px 0 0; background: var(--gray2); opacity: .55; }
+.col i.now { background: var(--c); opacity: 1; }
+.yrs { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; text-align: center; font-size: 18px; color: var(--ink3); }
+.yrs b { color: var(--ink); }
+
+.cap { font-size: 30px; line-height: 1.35; color: var(--ink); text-wrap: balance; }
+.cap b { color: var(--c); }
+.foot { display: flex; justify-content: space-between; font-size: 17px; color: var(--ink3); margin-top: -10px; }
+
+/* Kapak */
+.cover { justify-content: space-between; }
+.cover .eb { font-size: 22px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink2); }
+.cover h1 { font-family: var(--display); font-size: 104px; line-height: .95; letter-spacing: -.04em; margin-top: 18px; }
+.cover h1 em { font-style: normal; color: var(--blue); }
+.bigtot { background: var(--ink); color: #fff; border-radius: 32px; padding: 44px 48px; display: grid; gap: 12px; }
+.bigtot .l { font-size: 24px; opacity: .75; }
+.bigtot b { font-family: var(--display); font-size: 120px; letter-spacing: -.04em; line-height: .95; }
+.bigtot b small { font-size: .45em; opacity: .8; margin-left: 10px; }
+.bigtot .r { display: flex; gap: 22px; align-items: baseline; font-size: 24px; opacity: .9; }
+.bigtot .r .up { color: #fff; font-size: 34px; }
+.mixbar { display: flex; height: 22px; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+.mixbar i { display: block; height: 100%; }
+.lg { display: flex; gap: 22px; flex-wrap: wrap; font-size: 19px; opacity: .85; }
+.lg span { display: inline-flex; align-items: center; gap: 8px; }
+.lg i { width: 14px; height: 14px; border-radius: 4px; display: block; }
+.swipe { font-size: 24px; color: var(--ink2); display: flex; justify-content: space-between; align-items: center; }
+.swipe b { font-family: var(--display); font-size: 30px; color: var(--ink); }
+
+/* Özet */
+.sumlist { flex: 1; display: grid; grid-auto-rows: 1fr; gap: 14px; }
+.sr { background: var(--paper); border-radius: 22px; padding: 0 30px; display: grid; grid-template-columns: 60px 1fr auto auto; gap: 20px; align-items: center; }
+.sr .si { width: 56px; height: 56px; border-radius: 16px; } .sr .si svg { width: 30px; height: 30px; }
+.sr .n { font-size: 26px; font-weight: 600; } .sr .n small { display: block; font-size: 18px; color: var(--ink3); font-weight: 400; }
+.sr .v { font-family: var(--display); font-size: 40px; letter-spacing: -.02em; text-align: right; }
+.sr .up { font-size: 30px; min-width: 130px; text-align: right; }
+
+/* Poster */
+.poster { padding: 64px 72px 56px; }
+.poster svg text { font-family: var(--body); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// Örnek veri; gerçek rakamlar gelince yalnızca burası değişir
+const D = {
+  sms: { 2026: { tutar: 8457320, k3072: 2284600, k4072: 1612350, link: 1046280 }, 2025: { tutar: 7912640, k3072: 1968410, k4072: 1455900, link: 918530 } },
+  mail: { 2026: { islem: 1184200, tutar: 3926450 }, 2025: { islem: 1032700, tutar: 3410880 } },
+  push: { 2026: { islem: 412580, tutar: 1286300 }, 2025: { islem: 356900, tutar: 1104720 } },
+  mobil: { 2026: { islem: 698450, tutar: 2875610 }, 2025: { islem: 584120, tutar: 2310450 } },
+  google: { 2026: { harcama: 1250000, islem: 286400, donus: 5260000 }, 2025: { harcama: 1080000, islem: 241300, donus: 4185000 } },
+  youtube: { 2026: { gosterim: 4825300 }, 2025: { gosterim: 3964100 } },
+};
+const ORNEK = true;
+["2026", "2025"].forEach(y => D.sms[y].islem = D.sms[y].k3072 + D.sms[y].k4072 + D.sms[y].link);
+
+const ICON = {
+  sms: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+  push: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  mobil: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
+  google: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  youtube: '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
+};
+const CH = {
+  sms: { ad: "SMS", alt: "3072, 4072 ve bağış linki", c: "blue" },
+  mail: { ad: "Mail", alt: "Mail gönderimleri", c: "green" },
+  push: { ad: "Web Push", alt: "Push bildirimleri", c: "yellow" },
+  mobil: { ad: "Mobil uygulama", alt: "Uygulama içi bağışlar", c: "red" },
+  google: { ad: "Google", alt: "Reklam harcaması ve dönüşü", c: "gray" },
+  youtube: { ad: "YouTube", alt: "Video gösterimleri", c: "gray" },
+};
+const ORDER = ["sms", "mail", "push", "mobil", "google", "youtube"];
+const nf = new Intl.NumberFormat("tr-TR");
+const pf = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const df = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const pct = (a, b) => (b - a) / a * 100;
+const upTxt = (a, b) => { const p = pct(a, b); return `<span class="up ${p < 0 ? "down" : ""}">${p < 0 ? "▼" : "▲"} %${pf.format(Math.abs(p))}</span>`; };
+const yon = (a, b) => { const p = pct(a, b); return `%${pf.format(Math.abs(p))} ${p >= 0 ? "arttı" : "azaldı"}`; };
+const ic = k => `<span class="si"><svg viewBox="0 0 24 24">${ICON[k]}</svg></span>`;
+const TOTAL = ["sms", "mail", "push", "mobil"];
+const tot = y => TOTAL.reduce((s, k) => s + D[k][y].tutar, 0);
+const N = 8;
+const ust = n => `<div class="top"><span class="logo">LOGO</span><span>Dijital Bağış Raporu · 2026</span><span class="pg">${n} / ${N}</span></div>`;
+const foot = `<div class="foot"><span>${ORNEK ? "Örnek veri" : ""}</span><span>Değişim 2025'e göre</span></div>`;
+
+// İki yıllık sütun grubu (kendi ölçeğinde, sıfırdan başlar)
+function grp(label, a, b, unit = "") {
+  const m = Math.max(a, b), h = v => `${v / m * 100}%`;
+  return `<div class="grp"><div class="gh"><span>${label}</span>${upTxt(a, b)}</div>
+    <div class="cols"><div class="col"><span class="dim">${nf.format(a)}${unit}</span><i style="height:calc(${h(a)} - 40px)"></i></div>
+      <div class="col"><span>${nf.format(b)}${unit}</span><i class="now" style="height:calc(${h(b)} - 40px)"></i></div></div>
+    <div class="yrs"><span>2025</span><b>2026</b></div></div>`;
+}
+
+function kapak() {
+  const t26 = tot(2026), t25 = tot(2025);
+  return `<div class="card cover">${ust(1)}
+    <div><div class="eb">2026 Bağış Raporu</div><h1>Dijital kanallarda <em>büyüyen</em> iyilik</h1></div>
+    <div class="bigtot"><span class="l">2026'da dijital kanallardan gelen bağış</span>
+      <b>${nf.format(t26)}<small>₺</small></b>
+      <div class="r">${upTxt(t25, t26)}<span>2025'te ${nf.format(t25)} ₺</span></div>
+      <div class="mixbar">${TOTAL.map(k => `<i style="width:${D[k][2026].tutar / t26 * 100}%;background:var(--${CH[k].c})"></i>`).join("")}</div>
+      <div class="lg">${TOTAL.map(k => `<span><i style="background:var(--${CH[k].c})"></i>${CH[k].ad}</span>`).join("")}</div>
+    </div>
+    <div class="swipe"><span>${ORNEK ? "Örnek veri" : ""}</span><b>Kanal kanal görmek için kaydırın →</b></div></div>`;
+}
+
+function kanal(k, n) {
+  const a = D[k][2025], b = D[k][2026], ch = CH[k];
+  let eq, chart, cap;
+  if (k === "google") {
+    const r26 = b.donus / b.harcama, r25 = a.donus / a.harcama;
+    eq = `<div class="row in"><b>${nf.format(b.harcama)} ₺</b><span>harcama</span></div>
+      <div class="ar">↓</div><div class="row in"><b>${nf.format(b.islem)}</b><span>işlem</span></div>
+      <div class="ar">↓</div><div class="row out"><b>${nf.format(b.donus)} ₺</b><span>dönüş</span></div>`;
+    chart = `<div class="chart">${grp("Harcama", a.harcama, b.harcama, " ₺")}${grp("Dönüş", a.donus, b.donus, " ₺")}</div>`;
+    cap = `Her <b>1&nbsp;₺</b> reklam harcaması <b>${df.format(r26)}&nbsp;₺</b> bağış olarak geri döndü. 2025'te bu oran ${df.format(r25)}&nbsp;₺ idi.`;
+  } else if (k === "youtube") {
+    eq = `<div class="row out"><b>${nf.format(b.gosterim)}</b><span>gösterim</span></div><div class="sub">2025'te ${nf.format(a.gosterim)} gösterim</div>`;
+    chart = `<div class="chart" style="--g:1">${grp("Gösterim", a.gosterim, b.gosterim)}</div>`;
+    cap = `YouTube'daki videolarımız 2026'da <b>${nf.format(b.gosterim)}</b> kez izlendi; gösterim sayısı <b>${yon(a.gosterim, b.gosterim)}</b>.`;
+  } else {
+    eq = `<div class="row in"><b>${nf.format(b.islem)}</b><span>${k === "sms" ? "SMS ve link bağışı" : "işlem"}</span></div>
+      <div class="ar">↓</div><div class="row out"><b>${nf.format(b.tutar)} ₺</b><span>bağış</span></div>
+      ${k === "sms" ? `<div class="chips"><span>3072 <b>${nf.format(b.k3072)}</b></span><span>4072 <b>${nf.format(b.k4072)}</b></span><span>Bağış linki <b>${nf.format(b.link)}</b></span></div>` : ""}`;
+    chart = `<div class="chart">${grp(k === "sms" ? "SMS + link" : "İşlem", a.islem, b.islem)}${grp("Bağış", a.tutar, b.tutar, " ₺")}</div>`;
+    const ad = { sms: "SMS ile", mail: "Mail ile", push: "Web Push ile", mobil: "Mobil uygulamadan" }[k];
+    cap = `${ad} gelen bağış <b>${nf.format(b.tutar)}&nbsp;₺</b> oldu; geçen yıla göre <b>${yon(a.tutar, b.tutar)}</b>.`;
+  }
+  return `<div class="card" style="--c:var(--${ch.c})">${ust(n)}
+    <div class="chh">${ic(k)}<h2>${ch.ad}<small>${ch.alt}</small></h2></div>
+    <div class="eq">${eq}</div>${chart}<p class="cap">${cap}</p>${foot}</div>`;
+}
+
+function ozet() {
+  const rows = ORDER.map(k => {
+    const a = D[k][2025], b = D[k][2026];
+    const [v, u, va, vb] = k === "google" ? [b.donus, " ₺", a.donus, b.donus] : k === "youtube" ? [b.gosterim, "", a.gosterim, b.gosterim] : [b.tutar, " ₺", a.tutar, b.tutar];
+    const sub = k === "google" ? "reklam dönüşü" : k === "youtube" ? "gösterim" : "bağış";
+    return `<div class="sr" style="--c:var(--${CH[k].c})">${ic(k)}<span class="n">${CH[k].ad}<small>${sub}</small></span><span class="v">${nf.format(v)}${u}</span>${upTxt(va, vb)}</div>`;
+  }).join("");
+  return `<div class="card" style="--c:var(--blue)">${ust(N)}
+    <div class="chh"><h2>Bir bakışta 2026<small>Her kanalın 2026 rakamı ve 2025'e göre değişimi</small></h2></div>
+    <div class="sumlist">${rows}</div>
+    <p class="cap">Desteğiniz için teşekkür ederiz.</p>${foot}</div>`;
+}
+
+// Poster: ortada logo ve toplam, çevrede kanallar; çizgi kalınlığı kanalın getirdiği tutara göre
+function poster() {
+  const W = 936, H = 1240, cx = W / 2, cy = 700, R = 150, cw = 292, chh = 200;
+  const pos = { sms: [0, 330], mail: [0, 610], push: [0, 890], mobil: [W - cw, 330], google: [W - cw, 610], youtube: [W - cw, 890] };
+  const money = k => k === "google" ? D.google[2026].donus : k === "youtube" ? null : D[k][2026].tutar;
+  const maxM = Math.max(...ORDER.map(money).filter(v => v));
+  const t26 = tot(2026), t25 = tot(2025), p = pct(t25, t26);
+  let s = `<text x="0" y="40" font-size="22" fill="#5b636d" letter-spacing="3">2026 BAĞIŞ RAPORU</text>
+    <text x="0" y="120" font-size="72" font-weight="700" fill="#1c2127" font-family="Familjen Grotesk" letter-spacing="-2">Dijital kanallarımız</text>
+    <text x="0" y="170" font-size="26" fill="#5b636d">Her kanalın 2026 rakamı ve 2025'e göre değişimi</text>`;
+  ORDER.forEach(k => {
+    const [x, y] = pos[k], ex = x < cx ? x + cw : x, ey = y + chh / 2, m = money(k);
+    s += `<line x1="${ex}" y1="${ey}" x2="${cx}" y2="${cy}" stroke="var(--${CH[k].c})" stroke-width="${m ? 3 + 15 * m / maxM : 3}" ${m ? "" : 'stroke-dasharray="8 8"'} stroke-linecap="round" opacity=".55"/>`;
+  });
+  s += `<circle cx="${cx}" cy="${cy}" r="${R + 22}" fill="none" stroke="#e3e6ea" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="#1c2127"/>
+    <circle cx="${cx}" cy="${cy - 62}" r="46" fill="#fff" stroke="#9aa1a9" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="${cx}" y="${cy - 58}" text-anchor="middle" font-size="14" fill="#8a929b" letter-spacing="1">LOGO</text>
+    <text x="${cx}" y="${cy + 12}" text-anchor="middle" font-size="18" fill="#c9ced4">Toplam bağış</text>
+    <text x="${cx}" y="${cy + 58}" text-anchor="middle" font-size="40" font-weight="700" fill="#fff" font-family="Familjen Grotesk" letter-spacing="-1">${nf.format(t26)} ₺</text>
+    <text x="${cx}" y="${cy + 96}" text-anchor="middle" font-size="22" font-weight="600" fill="#fff">${p < 0 ? "▼" : "▲"} %${pf.format(Math.abs(p))}</text>`;
+  const html = ORDER.map(k => {
+    const [x, y] = pos[k], a = D[k][2025], b = D[k][2026];
+    let inp, val, va, vb, prev;
+    if (k === "google") { inp = `${nf.format(b.harcama)} ₺ harcama`; val = `${nf.format(b.donus)} ₺`; va = a.donus; vb = b.donus; prev = `${nf.format(a.donus)} ₺`; }
+    else if (k === "youtube") { inp = "video gösterimi"; val = nf.format(b.gosterim); va = a.gosterim; vb = b.gosterim; prev = nf.format(a.gosterim); }
+    else { inp = `${nf.format(b.islem)} ${k === "sms" ? "SMS ve link" : "işlem"}`; val = `${nf.format(b.tutar)} ₺`; va = a.tutar; vb = b.tutar; prev = `${nf.format(a.tutar)} ₺`; }
+    return `<div class="pc" style="left:${x}px;top:${y}px;width:${cw}px;height:${chh}px;--c:var(--${CH[k].c})">
+      <div class="pch">${ic(k)}<b>${CH[k].ad}</b></div><div class="pin">${inp}</div><div class="pv">${val}</div>
+      <div class="pp"><span>2025: ${prev}</span>${upTxt(va, vb)}</div></div>`;
+  }).join("");
+  return `<div class="card poster"><div style="position:relative;width:${W}px;height:${H}px">
+    <svg width="${W}" height="${H}" style="position:absolute;inset:0">${s}</svg>${html}
+    <div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;font-size:17px;color:#8a929b"><span>${ORNEK ? "Örnek veri" : ""}</span><span>SMS, Mail, Web Push ve Mobil uygulama toplamı</span></div>
+  </div></div>
+  <style>
+    .pc { position: absolute; background: #fff; border-radius: 24px; padding: 18px 20px; display: grid; gap: 4px; align-content: start; box-shadow: 0 2px 10px rgba(0,0,0,.04); }
+    .pch { display: flex; align-items: center; gap: 12px; font-size: 22px; }
+    .pc .si { width: 44px; height: 44px; border-radius: 13px; } .pc .si svg { width: 24px; height: 24px; }
+    .pin { font-size: 16px; color: #8a929b; margin-top: 6px; }
+    .pv { font-family: var(--display); font-weight: 700; font-size: 38px; letter-spacing: -.02em; line-height: 1.05; color: var(--c); }
+    .pp { display: flex; justify-content: space-between; align-items: baseline; font-size: 16px; color: #8a929b; }
+    .pp .up { font-size: 20px; }
+  </style>`;
+}
+
+const h = location.hash.slice(1) || "1";
+const app = document.getElementById("app");
+if (h === "poster") app.innerHTML = poster();
+else { const n = +h; app.innerHTML = n === 1 ? kapak() : n === N ? ozet() : kanal(ORDER[n - 2], n); }
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<title>Sosyal Medya Görselleri</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: üstte karusel (yatay kaydırmalı kart şeridi), altında poster; tıklanan görsel büyük açılır */
+:root { --bg: #eceef1; --surface: #ffffff; --ink: #1c2127; --muted: #5b636d; --line: #d9dde2; --accent: #3b6fb6;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif; --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #121518; --surface: #1b1f24; --ink: #eef1f4; --muted: #9ba3ae; --line: #2b3138; --accent: #7aa3dd; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #121518; --surface: #1b1f24; --ink: #eef1f4; --muted: #9ba3ae; --line: #2b3138; --accent: #7aa3dd; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); }
+.wrap { max-width: 1400px; margin: 0 auto; padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1 { font-family: var(--display); font-size: clamp(26px, 3vw, 34px); margin: 0; letter-spacing: -.02em; }
+.sub { color: var(--muted); margin: 6px 0 0; font-size: 15px; max-width: 70ch; line-height: 1.5; }
+h2 { font-family: var(--display); font-size: 20px; margin: 0 0 4px; }
+.h2s { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+.strip { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+.strip button { all: unset; flex: none; width: min(300px, 72vw); scroll-snap-align: start; cursor: pointer; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.strip img, .poster img { width: 100%; display: block; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.strip button:focus-visible img, .strip button:hover img, .poster button:hover img, .poster button:focus-visible img { outline: 2px solid var(--accent); outline-offset: 2px; }
+.poster { display: grid; grid-template-columns: minmax(0, 480px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.poster button { all: unset; cursor: pointer; display: block; }
+.notes { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; font-size: 14px; line-height: 1.55; color: var(--muted); display: grid; gap: 8px; }
+.notes b { color: var(--ink); font-weight: 600; }
+.big { position: fixed; inset: 0; background: rgba(10,12,14,.82); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); z-index: 20; }
+.big img { max-height: 92vh; max-width: 100%; border-radius: 10px; }
+.big button { position: absolute; top: max(16px, env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); font: 600 14px var(--body); background: #fff; color: #1c2127; border: 0; border-radius: 99px; padding: 8px 16px; cursor: pointer; }
+@media (max-width: 760px) { .poster { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Sosyal medya görselleri · 2026</h1>
+    <p class="sub">Instagram için 1080×1350. Rakamlar örnek; gerçek rakamlar gelince aynı tasarım yeniden üretilecek. Büyütmek için bir görsele dokunun.</p>
+  </header>
+  <section>
+    <h2>1 · Kanal kartları karuseli</h2>
+    <p class="h2s">8 kart: kapak, SMS, Mail, Web Push, Mobil uygulama, Google, YouTube, özet. Yana kaydırın.</p>
+    <div class="strip" id="strip"></div>
+  </section>
+  <section>
+    <h2>2 · Merkezde logo, çevresinde kanallar</h2>
+    <p class="h2s">Tek poster. Çizgi kalınlığı kanalın getirdiği tutara göre; YouTube'un tutarı olmadığı için kesikli.</p>
+    <div class="poster">
+      <button data-src="poster.png" aria-label="Posteri büyüt"><img src="poster.png" alt="Merkezde logo ve toplam bağış, çevresinde altı kanal"></button>
+      <div class="notes">
+        <span><b>Logo:</b> ortadaki ve kartlardaki kesikli daireler logo yeri. Logoyu SVG ya da şeffaf PNG olarak gönderirseniz yerleştiririm.</span>
+        <span><b>Rakamlar:</b> rapor sayfasını doldurduğunuzda oradaki rakamları okuyup bu görselleri gerçek verilerle yeniden üretebilirim.</span>
+        <span><b>Boyut:</b> hikâye (1080×1920) veya yatay (1920×1080) sürümleri de çıkarılabilir.</span>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="big" id="big" hidden><img alt=""><button type="button">Kapat</button></div>
+
+<script>
+const CARDS = ["Kapak", "SMS", "Mail", "Web Push", "Mobil uygulama", "Google", "YouTube", "Özet"];
+document.getElementById("strip").innerHTML = CARDS.map((n, i) =>
+  `<button data-src="kart-${i + 1}.png" aria-label="${n} kartını büyüt"><img src="kart-${i + 1}.png" alt="${n} kartı" loading="lazy"><span>${i + 1} · ${n}</span></button>`).join("");
+const big = document.getElementById("big");
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-src]");
+  if (b) { big.querySelector("img").src = b.dataset.src; big.hidden = false; return; }
+  if (!big.hidden && (e.target === big || e.target.closest(".big button"))) big.hidden = true;
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") big.hidden = true; });
+</script>
